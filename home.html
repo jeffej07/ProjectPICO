@@ -1325,11 +1325,26 @@
     .sidebar .logo{margin-bottom:0;margin-right:6px;padding:0 10px 0 0;border-bottom:none;border-right:1px solid var(--line);flex:none;font-size:20px;}
     .sidebar .logo img{height:2em;}
     .sidebar .logo .logo-text{font-size:1em;}
-    .side-frame{flex-direction:row;padding:8px;border-radius:14px;gap:8px;}
-    .side-link{flex:none;padding:10px 14px;font-size:13px;}
-    .side-link .icon-wrap{width:28px;height:28px;font-size:13px;}
-    .main{margin-left:0;margin-top:78px;}
-    .hero{padding-top:60px;}
+    .side-frame{
+      flex-direction:row;padding:6px;border-radius:14px;gap:4px;
+      -ms-overflow-style:none;scrollbar-width:none;
+    }
+    .side-frame::-webkit-scrollbar{display:none;}
+    .side-link{flex:none;padding:9px 12px;font-size:12.5px;gap:8px;white-space:nowrap;}
+    .side-link .icon-wrap{width:24px;height:24px;font-size:12px;}
+    /* fade the right edge of the scrollable nav so it reads as
+       "swipe for more" instead of content getting chopped off */
+    .sidebar{
+      -webkit-mask-image:linear-gradient(90deg,#000 92%,transparent 100%);
+      mask-image:linear-gradient(90deg,#000 92%,transparent 100%);
+    }
+    .main{margin-left:0;margin-top:70px;}
+    .hero{padding-top:36px;}
+    .eyebrow{
+      font-size:13.5px;gap:5px 8px;margin-bottom:10px;
+      line-height:1.4;
+    }
+    .eyebrow::before{width:5px;height:5px;}
     .orb{inset:var(--orb-size-mobile);}
     .hero .wrap,.about .wrap,.contact .wrap{grid-template-columns:1fr;}
     .stats .wrap{grid-template-columns:1fr;gap:36px;}
