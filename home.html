@@ -1356,6 +1356,29 @@
     .form-row{grid-template-columns:1fr;}
   }
 
+  /* ---- FORCE-LANDSCAPE HACK (mobile only) ----
+     There is no real "lock orientation" API for a normal website in a
+     browser tab (that only works for installed/fullscreen apps), so
+     this rotates the whole page 90° with CSS whenever a phone is held
+     upright. The page still scrolls top-to-bottom in the markup, it
+     just LOOKS like it's scrolling left-to-right once rotated, because
+     visually up/down and left/right have been swapped.
+     Only applies at phone widths (max-width:860px) in portrait — the
+     normal desktop layout is completely untouched. */
+  @media screen and (max-width:860px) and (orientation:portrait){
+    html{
+      transform:rotate(-90deg);
+      transform-origin:left top;
+      width:100vh;
+      height:100vw;
+      overflow-x:hidden;
+      position:absolute;
+      top:100%;
+      left:0;
+    }
+    body{width:100vh;}
+  }
+
   /* ---- Page fade-in loader ---- */
   #pageLoader{
     position:fixed;
