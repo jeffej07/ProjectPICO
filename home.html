@@ -1357,33 +1357,6 @@
     .form-row{grid-template-columns:1fr;}
   }
 
-  /* ---- ROTATE-DEVICE PROMPT (mobile only) ----
-     A CSS "force rotate" transform on <html> doesn't play nicely with
-     this page's fixed sidebar + the Lenis smooth-scroll script, so
-     instead of fighting the browser we do what most landscape-only
-     sites do: block the content with a simple overlay until the
-     phone is actually turned sideways. Reliable, no layout hacks. */
-  #rotateNotice{
-    display:none;
-    position:fixed;inset:0;z-index:100000;
-    background:var(--bg);
-    flex-direction:column;align-items:center;justify-content:center;
-    gap:18px;text-align:center;padding:32px;
-  }
-  #rotateNotice .rotate-icon{
-    font-size:48px;color:var(--accent-a);
-    animation:rotateHint 1.6s ease-in-out infinite;
-  }
-  #rotateNotice p{color:var(--text);font-size:16px;max-width:32ch;line-height:1.5;}
-  @keyframes rotateHint{
-    0%,100%{transform:rotate(0deg);}
-    50%{transform:rotate(-90deg);}
-  }
-  @media screen and (max-width:860px) and (orientation:portrait){
-    #rotateNotice{display:flex;}
-    body{overflow:hidden;height:100vh;}
-  }
-
   /* ---- Page fade-in loader ---- */
   #pageLoader{
     position:fixed;
@@ -1421,11 +1394,6 @@
 </style>
 </head>
 <body>
-
-<div id="rotateNotice">
-  <span class="rotate-icon"><i class="fa-solid fa-mobile-screen-button"></i></span>
-  <p>Please rotate your device to landscape to view this site.</p>
-</div>
 
 <div id="pageLoader">
   <span class="loader-dot"></span>
