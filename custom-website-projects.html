@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project PICO — Custom Website Projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0f0c;
+    --panel:#121a15;
+    --line:#1f2b23;
+    --text:#eef2ee;
+    --text-dim:#9fb0a6;
+    --accent-a:#2ee88f;
+    --accent-b:#c8f24d;
+    --heart-red:#ff4d5e;
+    --radius:8px;
+    --maxw:1160px;
+
+    /* Like/Love icon artwork from your uploaded PNGs, embedded so the file
+       stays a single self-contained HTML page. Used as CSS masks so the
+       shapes can be recolored with the master controls below instead of
+       being stuck at their original colors. The like icon is your PNG
+       as-is (already a single-color silhouette). The love icon is the
+       heart shape lifted out of your red-circle badge PNG — masking the
+       full badge would have painted the circle AND heart as one flat
+       blob, so only the heart outline is used and the circle's red is
+       reproduced via the default --icon-love-color below instead. */
+    --like-icon-url: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPwAAADlCAYAAAB3cpo0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAA9sWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMwNjcgNzkuMTU3NzQ3LCAyMDE1LzAzLzMwLTIzOjQwOjQyICAgICAgICAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczpBdHRyaWI9Imh0dHA6Ly9ucy5hdHRyaWJ1dGlvbi5jb20vYWRzLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgICAgICAgICAgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIgogICAgICAgICAgICB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgICAgICAgICB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgICAgICAgICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iPgogICAgICAgICA8QXR0cmliOkFkcz4KICAgICAgICAgICAgPHJkZjpTZXE+CiAgICAgICAgICAgICAgIDxyZGY6bGkgcmRmOnBhcnNlVHlwZT0iUmVzb3VyY2UiPgogICAgICAgICAgICAgICAgICA8QXR0cmliOkNyZWF0ZWQ+MjAyNi0wOS0xMDwvQXR0cmliOkNyZWF0ZWQ+CiAgICAgICAgICAgICAgICAgIDxBdHRyaWI6RGF0YT57ImRvYyI6IkRBSFV4VFhfNXAwIiwidXNlciI6IlVBSEIwN2pUTHZJIiwiYnJhbmQiOiJlbWlsIGJyeWFuIHRvbGVkb+KAmXMgdGVhbSJ9PC9BdHRyaWI6RGF0YT4KICAgICAgICAgICAgICAgICAgPEF0dHJpYjpFeHRJZD42OTMyZjBlZC0yNzhlLTQwN2YtODM2NC0xMzIwMzY5MGE5ZDI8L0F0dHJpYjpFeHRJZD4KICAgICAgICAgICAgICAgICAgPEF0dHJpYjpGYklkPjUyNTI2NTkxNDE3OTU4MDwvQXR0cmliOkZiSWQ+CiAgICAgICAgICAgICAgICAgIDxBdHRyaWI6VG91Y2hUeXBlPjI8L0F0dHJpYjpUb3VjaFR5cGU+CiAgICAgICAgICAgICAgIDwvcmRmOmxpPgogICAgICAgICAgICA8L3JkZjpTZXE+CiAgICAgICAgIDwvQXR0cmliOkFkcz4KICAgICAgICAgPGRjOnRpdGxlPgogICAgICAgICAgICA8cmRmOkFsdD4KICAgICAgICAgICAgICAgPHJkZjpsaSB4bWw6bGFuZz0ieC1kZWZhdWx0Ij5saWtlIGljb25zIC0gMTwvcmRmOmxpPgogICAgICAgICAgICA8L3JkZjpBbHQ+CiAgICAgICAgIDwvZGM6dGl0bGU+CiAgICAgICAgIDxkYzpjcmVhdG9yPgogICAgICAgICAgICA8cmRmOlNlcT4KICAgICAgICAgICAgICAgPHJkZjpsaT5BQiBKZXdlbHJ5IFRyYWRpbmcgSW5jPC9yZGY6bGk+CiAgICAgICAgICAgIDwvcmRmOlNlcT4KICAgICAgICAgPC9kYzpjcmVhdG9yPgogICAgICAgICA8ZGM6Zm9ybWF0PmltYWdlL3BuZzwvZGM6Zm9ybWF0PgogICAgICAgICA8eG1wOkNyZWF0b3JUb29sPkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChXaW5kb3dzKTwveG1wOkNyZWF0b3JUb29sPgogICAgICAgICA8eG1wOkNyZWF0ZURhdGU+MjAyNi0wOS0xMFQxMzoxMjowNCswODowMDwveG1wOkNyZWF0ZURhdGU+CiAgICAgICAgIDx4bXA6TW9kaWZ5RGF0ZT4yMDI2LTA5LTEwVDEzOjE0OjE2KzA4OjAwPC94bXA6TW9kaWZ5RGF0ZT4KICAgICAgICAgPHhtcDpNZXRhZGF0YURhdGU+MjAyNi0wOS0xMFQxMzoxNDoxNiswODowMDwveG1wOk1ldGFkYXRhRGF0ZT4KICAgICAgICAgPHBob3Rvc2hvcDpDb2xvck1vZGU+MzwvcGhvdG9zaG9wOkNvbG9yTW9kZT4KICAgICAgICAgPHhtcE1NOkluc3RhbmNlSUQ+eG1wLmlpZDoxNmU5MGVmYS03MDlhLWM3NGItYmVlMS0zMWRjZjBhYjZmNWQ8L3htcE1NOkluc3RhbmNlSUQ+CiAgICAgICAgIDx4bXBNTTpEb2N1bWVudElEPmFkb2JlOmRvY2lkOnBob3Rvc2hvcDo2YWZhMTVkNS1hY2Q2LTExZjEtODNhNi1kOTNlYWJjNDRhNWE8L3htcE1NOkRvY3VtZW50SUQ+CiAgICAgICAgIDx4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ+eG1wLmRpZDpiMGU1ZGY0MC05MDIzLWFjNDgtYTU3NC1iZDE0MmU1OGYyYzQ8L3htcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD4KICAgICAgICAgPHhtcE1NOkhpc3Rvcnk+CiAgICAgICAgICAgIDxyZGY6U2VxPgogICAgICAgICAgICAgICA8cmRmOmxpIHJkZjpwYXJzZVR5cGU9IlJlc291cmNlIj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OmFjdGlvbj5zYXZlZDwvc3RFdnQ6YWN0aW9uPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6aW5zdGFuY2VJRD54bXAuaWlkOmIwZTVkZjQwLTkwMjMtYWM0OC1hNTc0LWJkMTQyZTU4ZjJjNDwvc3RFdnQ6aW5zdGFuY2VJRD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OndoZW4+MjAyNi0wOS0xMFQxMzoxNDoxNiswODowMDwvc3RFdnQ6d2hlbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKFdpbmRvd3MpPC9zdEV2dDpzb2Z0d2FyZUFnZW50PgogICAgICAgICAgICAgICAgICA8c3RFdnQ6Y2hhbmdlZD4vPC9zdEV2dDpjaGFuZ2VkPgogICAgICAgICAgICAgICA8L3JkZjpsaT4KICAgICAgICAgICAgICAgPHJkZjpsaSByZGY6cGFyc2VUeXBlPSJSZXNvdXJjZSI+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDphY3Rpb24+c2F2ZWQ8L3N0RXZ0OmFjdGlvbj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0Omluc3RhbmNlSUQ+eG1wLmlpZDoxNmU5MGVmYS03MDlhLWM3NGItYmVlMS0zMWRjZjBhYjZmNWQ8L3N0RXZ0Omluc3RhbmNlSUQ+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDp3aGVuPjIwMjYtMDktMTBUMTM6MTQ6MTYrMDg6MDA8L3N0RXZ0OndoZW4+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDpzb2Z0d2FyZUFnZW50PkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChXaW5kb3dzKTwvc3RFdnQ6c29mdHdhcmVBZ2VudD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OmNoYW5nZWQ+Lzwvc3RFdnQ6Y2hhbmdlZD4KICAgICAgICAgICAgICAgPC9yZGY6bGk+CiAgICAgICAgICAgIDwvcmRmOlNlcT4KICAgICAgICAgPC94bXBNTTpIaXN0b3J5PgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICAgICA8dGlmZjpYUmVzb2x1dGlvbj45NjAwMDAvMTAwMDA8L3RpZmY6WFJlc29sdXRpb24+CiAgICAgICAgIDx0aWZmOllSZXNvbHV0aW9uPjk2MDAwMC8xMDAwMDwvdGlmZjpZUmVzb2x1dGlvbj4KICAgICAgICAgPHRpZmY6UmVzb2x1dGlvblVuaXQ+MjwvdGlmZjpSZXNvbHV0aW9uVW5pdD4KICAgICAgICAgPGV4aWY6Q29sb3JTcGFjZT42NTUzNTwvZXhpZjpDb2xvclNwYWNlPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+MjUyPC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6UGl4ZWxZRGltZW5zaW9uPjIyOTwvZXhpZjpQaXhlbFlEaW1lbnNpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgIAo8P3hwYWNrZXQgZW5kPSJ3Ij8+nivBMwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAAHlElEQVR42uzdS4he5R3H8d/SiNR7ghHdFSoiCo0XVDTeKrYLlVCtpV4gjpeMEQVFEZUuVEptkZImKkZRSlHBFAptaWwx8RbRlQi2q3YhCGYkKhLdvi6SQAyO53ln3pn3Oc/5/OG7S86b+XM+M5nnzCWj0SiShpElSMBLAl4S8JKAlwS8JOAlAS8JeEnASwJeEvAS8JKAlwS8JOAlAS8JeEnASwJeEvCSgJcEvAS8JOAlAS8JeEnASwJeEvCSgJcEvCTgJQEvAS8JeEnASwJeEvCSgJcE/DSX0f7cnuTtJKOD+iDJpiTXJFnZ4hvt3gZ+iOA3HwJ9vt5I8ivggQe+v3NSIfaD+yzJb5IcCTzwwPdr7l0A+APtSbIeeOCB78/sXAT4A20F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");
+    --love-icon-url: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPwAAADlCAYAAAB3cpo0AAADV0lEQVR4nO3dyW7jMBBAQXr+/581p8FksS3L5tLNrjrn0CL5RAUIkNYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANnFbPQDPHcdxvPqzt9stxH5mnLkKix3MlVjOzIop48xVWdwgekZzz4iQMs5cnQVdbHQ0X/UKaObMrQm/Jwu5yOxovvokoFVzi74Pi7jAytj/uRpQhJlbE/6n/qweoJoo4VyZI8rMrcWaJSNvy0miHtSzGzPr3Nznhp8gajStPZ8t69w8JnjSxpN17pUEP1iWQ/lzzqxz85zgB8p6GLPOzTnBD5Ixmowzt5Z37hUEzzdZ48k692yCH8DhIyrBsw0v2nOC78yhIzLBsxUv3OcE35HDRnSCZztevI8JHgoRfCduFTIQPBQieChE8GzJr1j3CR4KETwUIngoRPBQiOChEMFDIYKHQgQPhQieLfnPNPcJHgoRPBQi+E58QpKB4KEQwbMdX1uPCR4KEXxHbhaiEzxb8dJ9TvCdOXBEJni24WV7TvBQiOAHcNPMZ81fI3goRPCDuHGISPCk5+X6OsEP5CASjeAHE/1Y1vcawZOW2K8T/AQOJlEInpS8RN8j+Ekc0H6s5fsEP5GDymqCn0z0n7F+nxE8aYj9c4JfwMG9zpr1IfhFHODXWat+BL+Qg8xsgl9M9M9Zn74ET1hi70/wATjYv1mTMQQfhAP+n7UYR/CBOOjWYDTBB1P5wFd+9lkEH1DFg1/xmVcQfFCVAqj0rKsJPrAKIVR4xkgsdhLHcRyrZ+hN7PO54ZPYLY7dnicLwSeySyS7PEdGFj6hrJ/3Ql/PDZ9QxnAyzrwjwSeVKaBMs+7ORmwg8ie+2GOxGZuIFr3QY/JJv4lIgUWahe9szIZW3vZij83mbGp29ELPwSf9pmYGKPY8bFQBI297sedis4roHb3Qc7JpxfQIX+x52biC3o1e6PnZwMKuhC/2PdjE4s6iF/pebCattd/hCx0KiPY3+QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOf+Aojm5QtINWtSAAAAAElFTkSuQmCC");
+
+    /* ---------- MASTER ICON COLOR CONTROL ----------
+       Change these 4 lines to recolor the like/love icons EVERYWHERE.
+       (Also mirrored as JS constants near the top of the <script> block
+       — LIKE_ICON_COLOR etc — if you prefer editing it there instead;
+       the two stay in sync automatically.) */
+    --icon-like-color:#ffffff;         /* thumbs-up, not-yet-liked */
+    --icon-like-active-color:#2ee88f;  /* thumbs-up, after you like it */
+    --icon-love-color:#ff4d5e;         /* heart, not-yet-loved */
+    --icon-love-active-color:#ff2740;  /* heart, after you love it */
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{
+    height:100%;
+    overflow:hidden; /* no vertical page scroll — the website row scrolls horizontally instead */
+  }
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    display:flex;flex-direction:column;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;width:100%;}
+
+  /* ---------- top bar (logo + title + back button, all in one row) ---------- */
+  header{
+    display:flex;align-items:center;gap:28px;
+    padding:32px 0;border-bottom:1px solid var(--line);
+    flex-wrap:wrap;
+    flex-shrink:0; /* header keeps its height; the row below takes the rest */
+  }
+  .brand{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+  .brand img{height:36px;width:auto;display:block;}
+  .brand-text{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.01em;white-space:nowrap;}
+  .brand-text span{color:var(--accent-a);}
+
+  header h1{
+    flex:1;min-width:200px;
+    font-family:'Poppins',sans-serif;font-weight:600;
+    font-size:clamp(22px,3vw,36px);line-height:1.1;letter-spacing:-.01em;
+  }
+
+  .btn-back{
+    display:inline-flex;align-items:center;gap:8px;flex-shrink:0;
+    color:#0a0f0c;text-decoration:none;
+    font-size:14.5px;font-weight:600;
+    padding:12px 22px;border:1px solid var(--accent-a);border-radius:999px;
+    background:var(--accent-a);
+    transition:background .25s ease,border-color .25s ease,color .25s ease,transform .25s ease;
+  }
+  .btn-back:hover{background:#25cf7c;border-color:#25cf7c;transform:translateY(-1px);}
+
+  /* ---------- website row (horizontal scroll, no vertical page scroll) ----------
+     Card size is controlled from ONE place: the CARD_MIN_WIDTH
+     constant near the top of the <script> block below. Edit that
+     number to shrink/grow every website container at once.
+
+     Order = left to right. Newest project goes at the TOP of the
+     `sites` array in the script below, so it renders as the
+     LEFTMOST card; everything else shifts right. */
+  .grid-outer{
+    flex:1;min-height:0;overflow:hidden;
+    position:relative; /* anchors the edge-hover pan controls */
+  }
+  .grid{
+    height:100%;
+    display:flex;
+    flex-wrap:nowrap;
+    align-items:center;
+    gap:24px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding:0 24px;
+    touch-action:pan-x;
+    scrollbar-color:var(--accent-a) var(--panel); /* firefox */
+    scrollbar-width:thin;
+  }
+  .grid::-webkit-scrollbar{height:8px;}
+  .grid::-webkit-scrollbar-track{background:var(--panel);}
+  .grid::-webkit-scrollbar-thumb{background:var(--accent-a);border-radius:999px;}
+
+  /* ---------- edge hover-to-pan controls ----------
+     Appears only while the mouse actively hovers that edge (or, on
+     touch, briefly after a tap) and auto-hides the instant you leave.
+     Size, mask width, and color are all master-controlled from the
+     EDGE_* constants near the top of the <script> block below —
+     nothing here needs to be hand-edited. */
+  .edge-nav{
+    position:absolute;top:0;bottom:0;width:var(--edge-width,190px);z-index:5;
+    display:flex;align-items:center;
+    opacity:0;pointer-events:none; /* purely decorative (arrow + gradient wash) —
+      hover/tap/double-tap are all detected on .grid-outer instead (see script),
+      so this overlay can never sit on top of and swallow clicks meant for the
+      like/love/eye buttons on the first or last card underneath it */
+    transition:opacity .25s ease;
+  }
+  .edge-nav.show{opacity:1;}
+  .edge-nav.right{
+    right:0;justify-content:flex-end;padding-right:26px;
+    background:linear-gradient(to right,
+      transparent,
+      rgba(var(--edge-color,46,232,143), var(--edge-opacity-near,.14)) 55%,
+      rgba(var(--edge-color,46,232,143), var(--edge-opacity-far,.26)));
+  }
+  .edge-nav.left{
+    left:0;justify-content:flex-start;padding-left:26px;
+    background:linear-gradient(to left,
+      transparent,
+      rgba(var(--edge-color,46,232,143), var(--edge-opacity-near,.14)) 55%,
+      rgba(var(--edge-color,46,232,143), var(--edge-opacity-far,.26)));
+  }
+  .edge-nav svg{
+    width:var(--edge-arrow-size,34px);height:var(--edge-arrow-size,34px);
+    filter:drop-shadow(0 0 8px rgba(var(--edge-color,46,232,143),.65));
+    pointer-events:none; /* only clickable once actually visible — see .show rule below */
+  }
+  /* The strip itself stays pointer-events:none (so it never blocks the
+     like/love/eye buttons on the first/last card underneath it), but
+     the chevron icon becomes clickable the moment it's actually shown,
+     so a click there jumps the row instead of falling through to the
+     website card and opening its link. */
+  .edge-nav.show svg{pointer-events:auto;cursor:pointer;}
+  .edge-nav path{
+    fill:none;stroke:rgb(var(--edge-color,46,232,143));
+    stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+  }
+
+  .w-card{
+    position:relative;flex:0 0 var(--card-min,340px);
+    aspect-ratio:5/6;border-radius:var(--radius);
+    overflow:hidden;background:var(--panel);border:1px solid var(--line);
+  }
+  /* EDIT ME: per-project placeholder tint, shown behind the screenshot
+     while it loads (and as a fallback if img is left empty) — set via
+     --t1/--t2 in the data array below */
+  .w-card .grad{
+    position:absolute;inset:0;
+    background:linear-gradient(135deg,var(--t1,#123326),var(--t2,#0a0f0c));
+  }
+  /* the whole screenshot is a real link (see the <a class="thumb-link">
+     in the script below) — target/rel are set per-card from the
+     `link` field in the `sites` array, so it just opens in a new tab
+     natively, no JS click-handler needed */
+  .thumb-link{position:absolute;inset:0;display:block;z-index:1;}
+  .thumb-link img{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;object-position:top center;
+    transition:transform .5s cubic-bezier(.22,1,.36,1);
+  }
+  .w-card:hover .thumb-link img{transform:scale(1.06);}
+
+  /* "Visit Website" pill fades in on hover, in place of the old play button */
+  .visit-overlay{
+    position:absolute;left:50%;top:50%;z-index:2;
+    transform:translate(-50%,-50%) scale(.94);opacity:0;
+    display:inline-flex;align-items:center;gap:8px;
+    padding:12px 22px;border-radius:999px;
+    background:rgba(10,15,12,.6);border:1px solid rgba(255,255,255,.25);
+    backdrop-filter:blur(2px);
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;color:#fff;white-space:nowrap;
+    pointer-events:none; /* purely visual — the underlying <a> handles the click */
+    transition:opacity .3s ease,transform .3s cubic-bezier(.22,1,.36,1);
+  }
+  .w-card:hover .visit-overlay{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  .visit-overlay svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+  /* ---------- always-visible stats bar, sits inside the website card ---------- */
+  .stats-bar{
+    position:absolute;left:0;right:0;bottom:0;z-index:2;
+    display:flex;gap:18px;padding:12px 14px;
+    background:linear-gradient(0deg,rgba(6,10,8,.85),rgba(6,10,8,.35) 70%,transparent);
+    pointer-events:none; /* the bar itself is click-through; the two buttons below opt back in */
+  }
+  .stat{display:flex;align-items:center;gap:6px;}
+  .stat svg{width:14px;height:14px;flex-shrink:0;}
+  .stat .icon-eye{stroke:#fff;fill:none;stroke-width:1.6;}
+
+  /* ---------- like (thumbs-up) + love (heart) buttons ---------- */
+  .stat-btn{
+    pointer-events:auto;cursor:pointer;
+    background:none;border:none;padding:0;
+    display:flex;align-items:center;gap:6px;
+    font:inherit;
+    transition:transform .15s ease;
+  }
+  .stat-btn:hover{transform:scale(1.1);}
+  .stat-btn:active{transform:scale(.88);}
+
+  /* Like/Love icons are your PNG artwork, drawn via CSS mask so the
+     color comes from --icon-like-color / --icon-love-color (see the
+     MASTER ICON COLOR CONTROL vars in :root, or the JS consts near the
+     top of the script) instead of being baked into the image. */
+  .icon-like,.icon-love{
+    display:inline-block;width:14px;height:14px;flex-shrink:0;
+    -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+    -webkit-mask-position:center;mask-position:center;
+    -webkit-mask-size:contain;mask-size:contain;
+    transition:background-color .2s ease,transform .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  .icon-like{
+    -webkit-mask-image:var(--like-icon-url);mask-image:var(--like-icon-url);
+    background-color:var(--icon-like-color,#fff);
+  }
+  .stat-btn.like-btn.active .icon-like{background-color:var(--icon-like-active-color,var(--accent-a));}
+  .stat-btn.like-btn.active .stat-num{color:var(--icon-like-active-color,var(--accent-a));}
+
+  .icon-love{
+    -webkit-mask-image:var(--love-icon-url);mask-image:var(--love-icon-url);
+    background-color:var(--icon-love-color,var(--heart-red));
+  }
+  .stat-btn.love-btn.active .icon-love{background-color:var(--icon-love-active-color,var(--heart-red));transform:scale(1.22);}
+
+  .stat-num{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:#fff;font-variant-numeric:tabular-nums;transition:color .2s ease;}
+
+  @media(max-width:600px){
+    header{flex-direction:column;align-items:flex-start;gap:16px;padding:20px 0;}
+    header h1{font-size:22px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <img src="PICO.png" alt="PICO logo">
+      <div class="brand-text">Project <span>PICO</span></div>
+    </div>
+    <h1>Custom Website Projects</h1>
+    <a href="index.html" class="btn-back">← Back to site</a>
+  </header>
+</div>
+
+<div class="grid-outer">
+  <div class="edge-nav left" id="edge-left" aria-label="Scroll left">
+    <svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8"/><path d="M19 4l-8 8 8 8"/></svg>
+  </div>
+  <section class="grid" id="grid"></section>
+  <div class="edge-nav right" id="edge-right" aria-label="Scroll right">
+    <svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8"/><path d="M5 4l8 8-8 8"/></svg>
+  </div>
+</div>
+
+<script>
+  // ------------------------------------------------------------------
+  // EDIT ME: this is the only place you need to touch to add, remove,
+  // or update a website project. The row scrolls horizontally, newest
+  // on the LEFT — to add a new project, paste it as the FIRST object
+  // in this list (top of the array). Everything else shifts right
+  // automatically.
+  //
+  // title  : shown as this card's tooltip/aria-label.
+  // img    : the screenshot shown on the card. Currently these are
+  //          embedded as base64 data URLs so this stays one
+  //          self-contained file — you can leave that as-is, or swap
+  //          any of them for a plain file path (e.g. "media/site-1.jpg")
+  //          if you'd rather keep images as separate files.
+  // link   : *** EDIT THIS *** — the actual URL for that project.
+  //          They're all placeholder "#" values right now. Clicking a
+  //          card opens `link` in a new tab, so just replace "#" with
+  //          the live site's URL (e.g. "https://your-client-site.com")
+  //          whenever it's ready.
+  // tint1 / tint2 : fallback gradient shown behind the screenshot
+  //          while it loads (only matters if img is left empty).
+  // views / likes / loves : plain numbers — shown directly on the
+  //          card, no hover needed.
+  // ------------------------------------------------------------------
+  const sites = [
+    {
+      title: "Business Forum",
+      img: "assets/1.jpg",
+      link: "https://agora.ancorathemes.com/", // TODO: add the live URL for "Business Forum"
+      tint1: "#123326", tint2: "#0a0f0c",
+      views: 4200, likes: 318, loves: 96
+    },
+    {
+      title: "Gaming & Comics",
+      img: "assets/9.jpg",
+      link: "https://agora.ancorathemes.com/gaming-comics/", // TODO: add the live URL for "Gaming & Comics"
+      tint1: "#3a1414", tint2: "#0a0f0c",
+      views: 6800, likes: 540, loves: 211
+    },
+    {
+      title: "Motor Gear Shop",
+      img: "assets/motor.jpg",
+      link: "https://demo.yolotheme.com/motor/", // TODO: add the live URL for "Motor Gear Shop"
+      tint1: "#2a2a2a", tint2: "#0a0f0c",
+      views: 5100, likes: 402, loves: 150
+    },
+    {
+      title: "Event Schedule",
+      img: "assets/11.jpg",
+      link: "#", // TODO: add the live URL for "Event Schedule"
+      tint1: "#4a2410", tint2: "#0a0f0c",
+      views: 3900, likes: 275, loves: 88
+    },
+    {
+      title: "Online Conference",
+      img: "assets/5.jpg",
+      link: "https://agora.ancorathemes.com/online-conference/",
+      tint1: "#2c2c2c", tint2: "#0a0f0c",
+      views: 2600, likes: 190, loves: 64
+    },
+    {
+      title: "Multi Event",
+      img: "assets/7.jpg",
+      link: "#", // TODO: add the live URL for "Multi Event"
+      tint1: "#1f1f1f", tint2: "#0a0f0c",
+      views: 3300, likes: 224, loves: 77
+    }
+  ];
+
+  // ------------------------------------------------------------------
+  // MASTER SIZE CONTROL — edit this one number to resize EVERY website
+  // container at once. It's the minimum width (in px) each card is
+  // allowed to shrink to before the grid drops to fewer columns. Cards
+  // are portrait (5:6, like a full-page screenshot), so height follows
+  // automatically. Bigger number = bigger thumbnails (and fewer per row).
+  //   340  → current default (roughly 4-5 per row on a wide screen)
+  //   260  → smaller, more compact cards
+  //   440+ → very large cards, likely 2-3 per row
+  // ------------------------------------------------------------------
+  const CARD_MIN_WIDTH = 640;
+  document.documentElement.style.setProperty('--card-min', CARD_MIN_WIDTH + 'px');
+
+  // ------------------------------------------------------------------
+  // EDGE PAN CONTROLS — master settings for the hover-to-scroll arrows
+  // on the left/right edges. Edit these numbers, nothing else, to
+  // restyle or retune them everywhere at once.
+  // ------------------------------------------------------------------
+  const EDGE_ZONE_WIDTH   = 190;        // px — width of the hoverable strip AND the gradient wash
+  const EDGE_ARROW_SIZE   = 100;         // px — chevron icon size
+  const EDGE_COLOR        = '46,232,143'; // "r,g,b" — drives the arrow, glow, and gradient tint
+  const EDGE_OPACITY_NEAR = 0;       // gradient opacity where the wash starts fading in
+  const EDGE_OPACITY_FAR  = 0;       // gradient opacity right at the screen edge
+  const AUTO_SCROLL_SPEED = 1180;        // px/second — hover-and-hold pan speed
+  const JUMP_SPACES       = 1;          // "double space" — how many card-widths a double-click/double-tap jumps
+
+  document.documentElement.style.setProperty('--edge-width', EDGE_ZONE_WIDTH + 'px');
+  document.documentElement.style.setProperty('--edge-arrow-size', EDGE_ARROW_SIZE + 'px');
+  document.documentElement.style.setProperty('--edge-color', EDGE_COLOR);
+  document.documentElement.style.setProperty('--edge-opacity-near', EDGE_OPACITY_NEAR);
+  document.documentElement.style.setProperty('--edge-opacity-far', EDGE_OPACITY_FAR);
+
+  // ------------------------------------------------------------------
+  // ICON COLOR MASTER CONTROL — edit these 4 lines to recolor the
+  // like (thumbs-up) and love (heart) icons everywhere at once, for
+  // both their normal and "already clicked" states. (These mirror the
+  // --icon-*-color CSS variables in :root — editing either place keeps
+  // both in sync, so use whichever you find easier.)
+  // ------------------------------------------------------------------
+  const LIKE_ICON_COLOR        = '#ffffff';  // thumbs-up before you like it
+  const LIKE_ICON_ACTIVE_COLOR = '#2ee88f';  // thumbs-up after you like it
+  const LOVE_ICON_COLOR        = '#ff4d5e';  // heart before you love it
+  const LOVE_ICON_ACTIVE_COLOR = '#ff2740';  // heart after you love it
+
+  document.documentElement.style.setProperty('--icon-like-color', LIKE_ICON_COLOR);
+  document.documentElement.style.setProperty('--icon-like-active-color', LIKE_ICON_ACTIVE_COLOR);
+  document.documentElement.style.setProperty('--icon-love-color', LOVE_ICON_COLOR);
+  document.documentElement.style.setProperty('--icon-love-active-color', LOVE_ICON_ACTIVE_COLOR);
+
+  const grid = document.getElementById('grid');
+  const fmt = n => n.toLocaleString('en-US');
+
+  const iconEye  = `<svg class="icon-eye" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  // Like/Love are now your uploaded PNGs (drawn as CSS-masked <span>s so
+  // MASTER ICON COLOR CONTROL can recolor them) instead of the old
+  // placeholder SVG shapes.
+  const iconLike = `<span class="icon-like" aria-hidden="true"></span>`;
+  const iconLove = `<span class="icon-love" aria-hidden="true"></span>`;
+
+  // ------------------------------------------------------------------
+  // LIKE / LOVE persistence — remembers which projects *this browser*
+  // has liked/loved (localStorage) so the count and the button's
+  // active state survive a page refresh. Counts are client-side only
+  // (there's no backend here), so they reflect this visitor's own
+  // engagement layered on top of the starting numbers in the `sites`
+  // array above — they won't sync across different visitors/devices.
+  // ------------------------------------------------------------------
+  const ENGAGEMENT_KEY = 'pico-engagement';
+  function slugify(str){
+    return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+  function loadEngagement(){
+    try { return JSON.parse(localStorage.getItem(ENGAGEMENT_KEY)) || {}; }
+    catch { return {}; }
+  }
+  function saveEngagement(state){
+    try { localStorage.setItem(ENGAGEMENT_KEY, JSON.stringify(state)); }
+    catch { /* storage unavailable (private browsing, etc.) — fail quietly */ }
+  }
+  const engagement = loadEngagement();
+
+  const arrowUpRight = `<svg viewBox="0 0 24 24"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>`;
+
+  sites.forEach((v, i) => {
+    const card = document.createElement('div');
+    const id = slugify(v.title) || `site-${i}`;
+    const state = engagement[id] || { liked:false, loved:false };
+
+    card.className = 'w-card';
+    card.title = v.title;
+    card.style.setProperty('--t1', v.tint1);
+    card.style.setProperty('--t2', v.tint2);
+
+    const likeCount = v.likes + (state.liked ? 1 : 0);
+    const loveCount = v.loves + (state.loved ? 1 : 0);
+
+    card.innerHTML = `
+      <a class="thumb-link" href="${v.link}" target="_blank" rel="noopener" aria-label="Visit ${v.title} (opens in a new tab)">
+        <div class="grad"></div>
+        ${v.img ? `<img src="${v.img}" alt="${v.title} website preview" loading="lazy">` : ''}
+        <div class="visit-overlay">Visit Website ${arrowUpRight}</div>
+      </a>
+      <div class="stats-bar">
+        <div class="stat">${iconEye}<span class="stat-num">${fmt(v.views)}</span></div>
+        <button type="button" class="stat-btn like-btn${state.liked ? ' active' : ''}" aria-pressed="${state.liked}" aria-label="Like this project">${iconLike}<span class="stat-num">${fmt(likeCount)}</span></button>
+        <button type="button" class="stat-btn love-btn${state.loved ? ' active' : ''}" aria-pressed="${state.loved}" aria-label="Love this project">${iconLove}<span class="stat-num">${fmt(loveCount)}</span></button>
+      </div>
+    `;
+
+    // Flag a missing/broken screenshot loudly in the console instead of
+    // just having a blank/broken image silently sit there.
+    const img = card.querySelector('img');
+    if(img){
+      img.addEventListener('error', () => {
+        console.warn(`Screenshot for "${v.title}" failed to load.`);
+      });
+    }
+    if(v.link === '#'){
+      console.info(`"${v.title}" still has a placeholder link ("#") — edit the \`link\` field in the sites array to point it at the live site.`);
+    }
+
+    // ---- like / love buttons: exactly ONE +1 per user, persisted per-browser ----
+    // This is a toggle, not a counter you can spam: each click flips this
+    // visitor's own liked/loved flag for this project between true/false, so
+    // the displayed count is always "starting count + (0 or 1)" — never
+    // more than +1, no matter how many times the button is clicked. Click
+    // again to remove your +1. State is per-browser (localStorage), so it
+    // won't sync across different visitors/devices without a real backend.
+    function wireToggle(selector, key, baseCount){
+      const btn = card.querySelector(selector);
+      const numEl = btn.querySelector('.stat-num');
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // don't let the click bubble up and follow the card's link
+        e.preventDefault();
+        const isActive = btn.classList.toggle('active'); // flips true/false, never accumulates
+        btn.setAttribute('aria-pressed', String(isActive));
+        numEl.textContent = fmt(baseCount + (isActive ? 1 : 0)); // always base + 0 or 1
+        const current = loadEngagement();
+        current[id] = current[id] || {};
+        current[id][key] = isActive;
+        saveEngagement(current);
+      });
+    }
+    wireToggle('.like-btn', 'liked', v.likes);
+    wireToggle('.love-btn', 'loved', v.loves);
+
+    grid.appendChild(card);
+  });
+
+  // ---- let a normal mouse wheel scroll the row horizontally too ----
+  // (trackpads and touchscreens already scroll it sideways natively;
+  // this just makes a plain vertical wheel work the same way, since
+  // the page itself no longer scrolls up/down.) Bound to grid-outer
+  // so it also works while hovering the edge-nav arrows.
+  const gridOuter = document.querySelector('.grid-outer');
+  gridOuter.addEventListener('wheel', (e) => {
+    if(e.deltaY === 0) return; // already a horizontal gesture, let it through natively
+    e.preventDefault();
+    grid.scrollLeft += e.deltaY;
+  }, { passive:false });
+
+  // ------------------------------------------------------------------
+  // EDGE HOVER-TO-PAN — hover the left/right strip and the arrow +
+  // gradient fade in and the row auto-scrolls for as long as the
+  // mouse stays there; move away and it fades out and stops
+  // immediately. Double-click (desktop) or double-tap (touch) on
+  // either strip jumps a fixed distance for fast navigation.
+  //
+  // All of this is detected by mouse/touch COORDINATES on grid-outer
+  // itself (getZone below), not by listeners on the edge-nav strips.
+  // The strips are decorative only (see .edge-nav's pointer-events:none
+  // above) — this is what fixes the like/love/eye buttons on the first
+  // and last card being unclickable whenever they happened to sit
+  // underneath the (previously interactive) 190px-wide hover zone.
+  // ------------------------------------------------------------------
+  const edgeLeft = document.getElementById('edge-left');
+  const edgeRight = document.getElementById('edge-right');
+  const edgeLeftArrow = edgeLeft.querySelector('svg');
+  const edgeRightArrow = edgeRight.querySelector('svg');
+
+  function getZone(clientX){
+    const rect = gridOuter.getBoundingClientRect();
+    const x = clientX - rect.left;
+    if(x < EDGE_ZONE_WIDTH) return 'left';
+    if(x > rect.width - EDGE_ZONE_WIDTH) return 'right';
+    return null;
+  }
+
+  // Tracks whether there's actually more row to reveal in each
+  // direction, so the arrows never invite hovering/tapping into a
+  // dead end. Recomputed on every scroll and on resize.
+  const hasMore = { left:false, right:false };
+  function updateEdgeAvailability(){
+    const maxScroll = grid.scrollWidth - grid.clientWidth;
+    hasMore.left = grid.scrollLeft > 4;
+    hasMore.right = grid.scrollLeft < maxScroll - 4;
+    if(!hasMore.left) edgeLeft.classList.remove('show');
+    if(!hasMore.right) edgeRight.classList.remove('show');
+  }
+  grid.addEventListener('scroll', updateEdgeAvailability);
+  window.addEventListener('resize', updateEdgeAvailability);
+  updateEdgeAvailability();
+
+  // ---- continuous hover-and-hold auto-scroll ----
+  let autoScrollDir = 0;   // -1 left, 0 idle, 1 right
+  let autoScrollRAF = null;
+  let lastTs = null;
+
+  function autoScrollStep(ts){
+    if(lastTs === null) lastTs = ts;
+    const dt = (ts - lastTs) / 1000;
+    lastTs = ts;
+    if(autoScrollDir !== 0){
+      grid.scrollLeft += autoScrollDir * AUTO_SCROLL_SPEED * dt;
+      autoScrollRAF = requestAnimationFrame(autoScrollStep);
+    } else {
+      autoScrollRAF = null;
+      lastTs = null;
+    }
+  }
+  function startAutoScroll(dir){
+    autoScrollDir = dir;
+    if(!autoScrollRAF) autoScrollRAF = requestAnimationFrame(autoScrollStep);
+  }
+  function stopAutoScroll(){
+    autoScrollDir = 0;
+  }
+
+  // ---- mouse: hover near either edge (anywhere over grid-outer, cards
+  // included) reveals that side's arrow and starts panning; move away
+  // from the zone and it stops. Because this is one listener on the
+  // container instead of two on the strips, it never blocks a click on
+  // whatever is actually under the cursor. ----
+  function updateHoverZone(zone){
+    if(zone === 'left' && hasMore.left){
+      edgeLeft.classList.add('show');
+      startAutoScroll(-1);
+    } else {
+      edgeLeft.classList.remove('show');
+      if(autoScrollDir === -1) stopAutoScroll();
+    }
+    if(zone === 'right' && hasMore.right){
+      edgeRight.classList.add('show');
+      startAutoScroll(1);
+    } else {
+      edgeRight.classList.remove('show');
+      if(autoScrollDir === 1) stopAutoScroll();
+    }
+  }
+  gridOuter.addEventListener('mousemove', (e) => updateHoverZone(getZone(e.clientX)));
+  gridOuter.addEventListener('mouseleave', () => updateHoverZone(null));
+
+  // ---- touch: brief reveal on tap near an edge, since there's no hover ----
+  function revealBriefly(el, dir){
+    if(dir === 1 && !hasMore.right) return;
+    if(dir === -1 && !hasMore.left) return;
+    el.classList.add('show');
+    clearTimeout(el._hideTimer);
+    el._hideTimer = setTimeout(() => el.classList.remove('show'), 1400);
+  }
+  gridOuter.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    if(!t) return;
+    const zone = getZone(t.clientX);
+    if(zone === 'left') revealBriefly(edgeLeft, -1);
+    else if(zone === 'right') revealBriefly(edgeRight, 1);
+  }, { passive:true });
+
+  // ---- double-click / double-tap near an edge = fast jump ("double space") ----
+  function jump(dir){
+    const spaceWidth = CARD_MIN_WIDTH + 24; // 24 = the grid's gap between cards
+    grid.scrollBy({ left: dir * spaceWidth * JUMP_SPACES, behavior:'smooth' });
+  }
+  // ---- clicking the visible arrow icon itself jumps immediately,
+  // instead of the click falling through to the website card underneath
+  // and playing it. ----
+  edgeLeftArrow.addEventListener('click', (e) => { e.stopPropagation(); jump(-1); });
+  edgeRightArrow.addEventListener('click', (e) => { e.stopPropagation(); jump(1); });
+
+  gridOuter.addEventListener('dblclick', (e) => {
+    const zone = getZone(e.clientX);
+    if(zone === 'left') jump(-1);
+    else if(zone === 'right') jump(1);
+  });
+
+  // Manual double-tap detection as a fallback for touch browsers that
+  // don't synthesize a dblclick from two quick taps.
+  const lastTap = { left:0, right:0 };
+  function handleDoubleTap(zone, dir){
+    const now = Date.now();
+    if(now - lastTap[zone] < 350){
+      jump(dir);
+      lastTap[zone] = 0;
+    } else {
+      lastTap[zone] = now;
+    }
+  }
+  gridOuter.addEventListener('touchend', (e) => {
+    const t = e.changedTouches[0];
+    if(!t) return;
+    const zone = getZone(t.clientX);
+    if(zone === 'left') handleDoubleTap('left', -1);
+    else if(zone === 'right') handleDoubleTap('right', 1);
+  });
+</script>
+
+</body>
+</html>
