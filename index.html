@@ -153,8 +153,27 @@
       // if you change one, change both.
       var FADE_MS = 950;
 
+      // ↓↓↓ MASTER CONTROL — MOBILE vs DESKTOP ROUTING ↓↓↓
+      // Decides which page this loader sends people to once it's done.
+      // A screen counts as "mobile" only if it's BOTH narrower than
+      // MOBILE_BREAKPOINT_PX AND taller than it is wide (portrait) —
+      // so a phone held sideways, a tablet, or any desktop/landscape
+      // window still gets home.html. Raise MOBILE_BREAKPOINT_PX to
+      // catch slightly wider phones as "mobile"; lower it to be more
+      // strict. 430-430ish phone widths (iPhone, Pixel, etc.) are
+      // comfortably under the default.
+      var MOBILE_BREAKPOINT_PX = 600;
+
+      function isMobileScreen(){
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        return w <= MOBILE_BREAKPOINT_PX && h > w;
+      }
+
       function goToSite(){
-        window.location.href = 'home.html';
+        // Checked right here (not just once on load) so a rotation
+        // during the intro animation is still picked up correctly.
+        window.location.href = isMobileScreen() ? 'mobile.html' : 'home.html';
       }
 
       setTimeout(function(){

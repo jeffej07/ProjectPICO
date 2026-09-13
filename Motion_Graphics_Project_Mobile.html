@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Project PICO — Motion Graphic Design</title>
+<title>Project PICO — Motion Graphic Design (Mobile)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -18,6 +18,31 @@
     --heart-red:#ff4d5e;
     --radius:8px;
     --maxw:1160px;
+
+    /* ---------- MASTER SPACING CONTROL ----------
+       --space-card-top and --space-card-bottom are the two that matter
+       most: they set the space ABOVE and BELOW every single video card,
+       independently. They stack additively between two cards (card 1's
+       bottom + card 2's top), and also apply at the very first card
+       (space after the header) and the very last card (space before
+       the footer) — so there's no separate "header-to-feed" value to
+       juggle, just these two. */
+    --space-card-top:156px;        /* space ABOVE every video card */
+    --space-card-bottom:156px;     /* space BELOW every video card */
+    --space-feed-x:20px;          /* left/right padding around every video card */
+    --space-header-y:14px;        /* header padding, top (before safe-area) and bottom */
+    --space-header-x:20px;        /* header padding, left/right */
+    --space-footer-y:22px;        /* footer padding, top and bottom (before safe-area) */
+    --space-footer-x:20px;        /* footer padding, left/right */
+
+    /* ---------- TITLE MARQUEE CONTROLS ----------
+       The scrolling title strip that runs full-bleed under every video
+       card. --marquee-size is the font size (in points, so it matches
+       print-style sizing you might already be thinking in); --marquee-y
+       is the blank space above/below the text inside its strip. */
+    --marquee-size:50pt;
+    --marquee-y:18px;
+    --marquee-footer-gap:64px;   /* EXTRA space after the very last title strip, before the footer */
 
     /* Like/Love icon artwork from your uploaded PNGs, embedded so the file
        stays a single self-contained HTML page. Used as CSS masks so the
@@ -43,8 +68,8 @@
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html,body{
-    height:100%;
-    overflow:hidden; /* no vertical page scroll — the video row scrolls horizontally instead */
+    min-height:100%;
+    overscroll-behavior-y:contain;
   }
   body{
     background:var(--bg);
@@ -53,170 +78,171 @@
     -webkit-font-smoothing:antialiased;
     display:flex;flex-direction:column;
   }
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;width:100%;}
 
-  /* ---------- top bar (logo + title + back button, all in one row) ---------- */
+  /* ---------- top bar — sits in normal flow, scrolls away with the page ---------- */
   header{
-    display:flex;align-items:center;gap:28px;
-    padding:32px 0;border-bottom:1px solid var(--line);
-    flex-wrap:wrap;
-    flex-shrink:0; /* header keeps its height; the row below takes the rest */
+    position:sticky;top:0;z-index:20;
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:calc(var(--space-header-y) + env(safe-area-inset-top)) var(--space-header-x) var(--space-header-y);
+    background:rgba(10,15,12,.92);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
   }
-  .brand{display:flex;align-items:center;gap:14px;flex-shrink:0;}
-  .brand img{height:36px;width:auto;display:block;}
-  .brand-text{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.01em;white-space:nowrap;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand img{height:26px;width:auto;display:block;}
+  .brand-text{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;letter-spacing:-.01em;white-space:nowrap;}
   .brand-text span{color:var(--accent-a);}
 
-  header h1{
-    flex:1;min-width:200px;
-    font-family:'Poppins',sans-serif;font-weight:600;
-    font-size:clamp(22px,3vw,36px);line-height:1.1;letter-spacing:-.01em;
-  }
-
   .btn-back{
-    display:inline-flex;align-items:center;gap:8px;flex-shrink:0;
-    color:#0a0f0c;text-decoration:none;
-    font-size:14.5px;font-weight:600;
-    padding:12px 22px;border:1px solid var(--accent-a);border-radius:999px;
-    background:var(--accent-a);
-    transition:background .25s ease,border-color .25s ease,color .25s ease,transform .25s ease;
+    display:inline-flex;align-items:center;gap:6px;flex-shrink:0;
+    color:var(--text);text-decoration:none;
+    font-size:13px;font-weight:600;
+    padding:8px 14px;border:1px solid rgba(255,255,255,.28);border-radius:999px;
+    background:rgba(46,232,143,.08);backdrop-filter:blur(6px);
+    transition:background .25s ease,border-color .25s ease,transform .25s ease;
   }
-  .btn-back:hover{background:#25cf7c;border-color:#25cf7c;transform:translateY(-1px);}
+  .btn-back:active{transform:scale(.94);background:rgba(46,232,143,.18);}
 
-  /* ---------- video row (horizontal scroll, no vertical page scroll) ----------
-     Card size is controlled from ONE place: the CARD_MIN_WIDTH
-     constant near the top of the <script> block below. Edit that
-     number to shrink/grow every video container at once.
-
-     Order = left to right. Newest video goes at the TOP of the
-     `videos` array in the script below, so it renders as the
-     LEFTMOST card; everything else shifts right. */
-  .grid-outer{
-    flex:1;min-height:0;overflow:hidden;
-    position:relative; /* anchors the edge-hover pan controls */
-  }
-  .grid{
-    height:100%;
-    display:flex;
-    flex-wrap:nowrap;
-    align-items:center;
-    gap:24px;
-    overflow-x:auto;
-    overflow-y:hidden;
-    padding:0 24px;
-    touch-action:pan-x;
-    scrollbar-color:var(--accent-a) var(--panel); /* firefox */
-    scrollbar-width:thin;
-  }
-  .grid::-webkit-scrollbar{height:8px;}
-  .grid::-webkit-scrollbar-track{background:var(--panel);}
-  .grid::-webkit-scrollbar-thumb{background:var(--accent-a);border-radius:999px;}
-
-  /* ---------- edge hover-to-pan controls ----------
-     Appears only while the mouse actively hovers that edge (or, on
-     touch, briefly after a tap) and auto-hides the instant you leave.
-     Size, mask width, and color are all master-controlled from the
-     EDGE_* constants near the top of the <script> block below —
-     nothing here needs to be hand-edited. */
-  .edge-nav{
-    position:absolute;top:0;bottom:0;width:var(--edge-width,190px);z-index:5;
-    display:flex;align-items:center;
-    opacity:0;pointer-events:none; /* purely decorative (arrow + gradient wash) —
-      hover/tap/double-tap are all detected on .grid-outer instead (see script),
-      so this overlay can never sit on top of and swallow clicks meant for the
-      like/love/eye buttons on the first or last card underneath it */
-    transition:opacity .25s ease;
-  }
-  .edge-nav.show{opacity:1;}
-  .edge-nav.right{
-    right:0;justify-content:flex-end;padding-right:26px;
-    background:linear-gradient(to right,
-      transparent,
-      rgba(var(--edge-color,46,232,143), var(--edge-opacity-near,.14)) 55%,
-      rgba(var(--edge-color,46,232,143), var(--edge-opacity-far,.26)));
-  }
-  .edge-nav.left{
-    left:0;justify-content:flex-start;padding-left:26px;
-    background:linear-gradient(to left,
-      transparent,
-      rgba(var(--edge-color,46,232,143), var(--edge-opacity-near,.14)) 55%,
-      rgba(var(--edge-color,46,232,143), var(--edge-opacity-far,.26)));
-  }
-  .edge-nav svg{
-    width:var(--edge-arrow-size,34px);height:var(--edge-arrow-size,34px);
-    filter:drop-shadow(0 0 8px rgba(var(--edge-color,46,232,143),.65));
-    pointer-events:none; /* only clickable once actually visible — see .show rule below */
-  }
-  /* The strip itself stays pointer-events:none (so it never blocks the
-     like/love/eye buttons on the first/last card underneath it), but
-     the chevron icon becomes clickable the moment it's actually shown,
-     so a click there jumps the row instead of falling through to the
-     video card and playing it. */
-  .edge-nav.show svg{pointer-events:auto;cursor:pointer;}
-  .edge-nav path{
-    fill:none;stroke:rgb(var(--edge-color,46,232,143));
-    stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+  /* ---------- gallery — a normal scrolling column of video cards ---------- */
+  .feed{
+    flex:3;
+    display:flex;flex-direction:column;align-items:stretch;
+    padding:0 var(--space-feed-x);
   }
 
-  .v-card{
-    position:relative;flex:0 0 var(--card-min,420px);
-    aspect-ratio:16/9;border-radius:var(--radius);
-    overflow:hidden;cursor:pointer;background:var(--panel);border:1px solid var(--line);
+  /* each row gets its OWN top/bottom space — see --space-card-top and
+     --space-card-bottom above — instead of one shared gap. Margins on
+     flex children don't collapse, so two adjacent cards' top+bottom
+     margins add together rather than overlapping. */
+  .v-row{
+    display:flex;width:100%;
+    margin-top:var(--space-card-top);
+    margin-bottom:var(--space-card-bottom);
   }
-  /* EDIT ME: per-video placeholder tint (used only when no poster image is set) — set via --t1/--t2 in the data array below */
-  .v-card .grad{
+  .v-row.align-left{justify-content:flex-start;}
+  .v-row.align-right{justify-content:flex-end;}
+
+  .v-item{
+    position:relative;
+    width:min(360px,84vw);
+    aspect-ratio:4/5;
+    border-radius:20px;
+    overflow:hidden;background:#000;
+    box-shadow:0 12px 30px rgba(0,0,0,.35);
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  .v-item .grad{
     position:absolute;inset:0;
     background:linear-gradient(135deg,var(--t1,#123326),var(--t2,#0a0f0c));
     background-size:cover;background-position:center;
-    transition:transform .5s cubic-bezier(.22,1,.36,1);
   }
-  .v-card:hover .grad{transform:scale(1.06);}
 
-  /* muted looping hover-preview video, crossfades over the poster/gradient */
-  .v-card video.preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s ease;}
-  .v-card.has-video:hover video.preview{opacity:1;}
-  .v-card.has-video:hover .grad{opacity:0;}
+  /* ---------- thumbnail layer: shown until the clip is playing, with a
+     gentle scroll-linked drift (see the parallax script below) ---------- */
+  .v-thumb{
+    position:absolute;inset:0;z-index:0;overflow:hidden;
+    opacity:1;transition:opacity .35s ease;
+  }
+  .v-item:not(.paused) .v-thumb{opacity:0;pointer-events:none;}
+  .v-thumb img{
+    position:absolute;left:0;top:-15%;
+    width:100%;height:130%;
+    object-fit:cover;display:block;
+    will-change:transform;
+    transform:translateY(0);
+  }
+
+  /* object-fit:contain + a black backdrop means every clip is shown in
+     full — letterboxed if its ratio doesn't match the card — instead of
+     being zoomed/cropped to fill the frame. Kept transparent (opacity 0)
+     until the clip is actually playing, otherwise the video element's
+     own black box sits on top of and hides the .v-thumb image below it. */
+  .v-item video{
+    position:relative;z-index:1;width:100%;height:100%;
+    object-fit:contain;
+    background:#000;
+    opacity:0;transition:opacity .25s ease;
+  }
+  .v-item:not(.paused) video{opacity:1;}
+
+  /* subtle top-to-bottom + bottom-to-top wash so the overlay text/controls
+     stay legible over any footage */
+  .v-item::before{
+    content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,rgba(4,7,5,.4) 0,transparent 20%,transparent 60%,rgba(4,7,5,.75) 100%);
+  }
 
   .play-btn{
     position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(1);
-    width:52px;height:52px;border-radius:50%;
+    width:56px;height:56px;border-radius:50%;z-index:3;
     background:rgba(10,15,12,.55);border:1px solid rgba(255,255,255,.25);
     display:flex;align-items:center;justify-content:center;
-    transition:transform .3s cubic-bezier(.22,1,.36,1),background .3s ease,opacity .3s ease;
-    backdrop-filter:blur(2px);
-    z-index:2;
+    opacity:0;transition:opacity .2s ease,transform .2s cubic-bezier(.22,1,.36,1);
+    backdrop-filter:blur(2px);pointer-events:none;
   }
-  .v-card:hover .play-btn{opacity:0;transform:translate(-50%,-50%) scale(.8);}
-  .play-btn svg{width:16px;height:16px;fill:var(--text);margin-left:2px;}
+  .v-item.paused .play-btn{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  .play-btn svg{width:20px;height:20px;fill:var(--text);margin-left:3px;}
 
-  /* ---------- always-visible stats bar, sits inside the video container ---------- */
-  .stats-bar{
-    position:absolute;left:0;right:0;bottom:0;z-index:2;
-    display:flex;gap:18px;padding:12px 14px;
-    background:linear-gradient(0deg,rgba(6,10,8,.85),rgba(6,10,8,.35) 70%,transparent);
-    pointer-events:none; /* the bar itself is click-through; the two buttons below opt back in */
+  /* burst heart shown on a double-tap "love" — purely decorative, never
+     intercepts touches, fades out on its own */
+  .burst-heart{
+    position:absolute;left:50%;top:50%;z-index:4;
+    width:96px;height:96px;transform:translate(-50%,-50%) scale(.4);
+    -webkit-mask-image:var(--love-icon-url);mask-image:var(--love-icon-url);
+    -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+    -webkit-mask-position:center;mask-position:center;
+    -webkit-mask-size:contain;mask-size:contain;
+    background-color:var(--icon-love-active-color,var(--heart-red));
+    opacity:0;pointer-events:none;
+    filter:drop-shadow(0 4px 18px rgba(0,0,0,.45));
   }
-  .stat{display:flex;align-items:center;gap:6px;}
-  .stat svg{width:14px;height:14px;flex-shrink:0;}
-  .stat .icon-eye{stroke:#fff;fill:none;stroke-width:1.6;}
+  .burst-heart.play{animation:heartBurst .75s cubic-bezier(.2,1.4,.4,1) forwards;}
+  @keyframes heartBurst{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.4);}
+    18%{opacity:1;transform:translate(-50%,-50%) scale(1.15);}
+    32%{transform:translate(-50%,-50%) scale(.96);}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(1.05);}
+  }
 
-  /* ---------- like (thumbs-up) + love (heart) buttons ---------- */
-  .stat-btn{
+  /* ---------- bottom info: view count only, left-aligned ---------- */
+  /* (the title used to live here too — it's now the full-bleed marquee
+     strip below the card instead; see .title-marquee) */
+  .v-info{
+    position:absolute;left:0;right:88px;bottom:0;z-index:2;
+    padding:0 16px calc(22px + env(safe-area-inset-bottom));
+    pointer-events:none;
+  }
+  .v-views{display:flex;align-items:center;gap:6px;color:var(--text-dim);font-size:13px;}
+  .v-views svg{width:14px;height:14px;flex-shrink:0;stroke:var(--text-dim);fill:none;stroke-width:1.6;}
+  .v-views .stat-num{font-family:'Space Grotesk',sans-serif;font-weight:600;font-variant-numeric:tabular-nums;}
+
+  /* ---------- right-hand action rail: mute + like + love ---------- */
+  .v-actions{
+    position:absolute;right:12px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:3;
+    display:flex;flex-direction:column;align-items:center;gap:22px;
+  }
+  .action-btn{
     pointer-events:auto;cursor:pointer;
     background:none;border:none;padding:0;
-    display:flex;align-items:center;gap:6px;
-    font:inherit;
+    display:flex;flex-direction:column;align-items:center;gap:5px;
+    font:inherit;color:var(--text);
     transition:transform .15s ease;
   }
-  .stat-btn:hover{transform:scale(1.1);}
-  .stat-btn:active{transform:scale(.88);}
+  .action-btn:active{transform:scale(.86);}
+  .action-circle{
+    width:46px;height:46px;border-radius:50%;
+    background:rgba(18,26,21,.55);border:1px solid rgba(255,255,255,.16);
+    backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .action-btn .stat-num{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12.5px;font-variant-numeric:tabular-nums;}
 
-  /* Like/Love icons are your PNG artwork, drawn via CSS mask so the
-     color comes from --icon-like-color / --icon-love-color (see the
-     MASTER ICON COLOR CONTROL vars in :root, or the JS consts near the
-     top of the script) instead of being baked into the image. */
+  .icon-mute{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+  .icon-mute .wave{transition:opacity .15s ease;}
+  .action-btn.muted .icon-mute .wave{opacity:0;}
+
   .icon-like,.icon-love{
-    display:inline-block;width:14px;height:14px;flex-shrink:0;
+    display:inline-block;width:19px;height:19px;flex-shrink:0;
     -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
     -webkit-mask-position:center;mask-position:center;
     -webkit-mask-size:contain;mask-size:contain;
@@ -226,36 +252,53 @@
     -webkit-mask-image:var(--like-icon-url);mask-image:var(--like-icon-url);
     background-color:var(--icon-like-color,#fff);
   }
-  .stat-btn.like-btn.active .icon-like{background-color:var(--icon-like-active-color,var(--accent-a));}
-  .stat-btn.like-btn.active .stat-num{color:var(--icon-like-active-color,var(--accent-a));}
+  .action-btn.like-btn.active .icon-like{background-color:var(--icon-like-active-color,var(--accent-a));}
+  .action-btn.like-btn.active .stat-num{color:var(--icon-like-active-color,var(--accent-a));}
 
   .icon-love{
     -webkit-mask-image:var(--love-icon-url);mask-image:var(--love-icon-url);
     background-color:var(--icon-love-color,var(--heart-red));
   }
-  .stat-btn.love-btn.active .icon-love{background-color:var(--icon-love-active-color,var(--heart-red));transform:scale(1.22);}
+  .action-btn.love-btn.active .icon-love{background-color:var(--icon-love-active-color,var(--heart-red));transform:scale(1.2);}
+  .action-btn.love-btn.active .stat-num{color:var(--icon-love-active-color,var(--heart-red));}
 
-  .stat-num{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:#fff;font-variant-numeric:tabular-nums;transition:color .2s ease;}
-
-  /* ---------- click-to-play modal ---------- */
-  .player-modal{
-    position:fixed;inset:0;background:rgba(5,8,6,.92);
-    display:none;align-items:center;justify-content:center;
-    padding:32px;z-index:100;
+  /* ---------- scrolling title strip under each video ----------
+     Full-bleed (edge-to-edge of the screen, ignoring .feed's own
+     side padding) via the classic width:100vw + negative-margin
+     trick. Two identical copies of the repeated title sit side by
+     side in .title-marquee-track; the JS below just slides that
+     track back and forth by half its width and wraps the position,
+     so the loop never visibly "jumps". */
+  .title-marquee{
+    width:100vw;
+    margin-left:calc(50% - 50vw);
+    overflow:hidden;
+    white-space:nowrap;
+    padding:var(--marquee-y) 0;
+    pointer-events:none;
+    -webkit-user-select:none;user-select:none;
   }
-  .player-modal.open{display:flex;}
-  .player-modal-inner{position:relative;max-width:920px;width:100%;}
-  .player-modal-inner video{width:100%;max-height:80vh;border-radius:8px;background:#000;display:block;}
-  .player-close{
-    position:absolute;top:-44px;right:0;
-    background:none;border:none;color:var(--text);font-size:26px;line-height:1;
-    cursor:pointer;padding:6px;
+  .title-marquee-track{
+    display:inline-flex;
+    will-change:transform;
   }
-  .player-close:hover{color:var(--accent-a);}
+  .title-marquee-track span{
+    font-family:'Poppins',sans-serif;font-weight:700;
+    font-size:var(--marquee-size);line-height:1;
+    color:var(--text);white-space:nowrap;flex-shrink:0;
+  }
+  /* the last video's strip sits right above the footer, so it gets
+     extra breathing room on top of --marquee-y that every strip has */
+  .title-marquee:last-of-type{
+    padding-bottom:calc(var(--marquee-y) + var(--marquee-footer-gap));
+  }
 
-  @media(max-width:600px){
-    header{flex-direction:column;align-items:flex-start;gap:16px;padding:20px 0;}
-    header h1{font-size:22px;}
+  /* ---------- footer ---------- */
+  footer{
+    text-align:center;
+    padding:var(--space-footer-y) var(--space-footer-x) calc(var(--space-footer-y) + env(safe-area-inset-bottom));
+    color:var(--text-dim);font-size:12.5px;
+    border-top:1px solid var(--line);
   }
 </style>
 </head>
@@ -269,7 +312,7 @@
   // longer fits. Mirrors the same check used in index.html's loader.
   (function(){
     var MOBILE_BREAKPOINT_PX = 600; // keep this in sync across pages
-    var IS_MOBILE_PAGE = false;
+    var IS_MOBILE_PAGE = true;
     var DESKTOP_URL = 'Motion_Graphics_Project.html';
     var MOBILE_URL = 'Motion_Graphics_Project_Mobile.html';
 
@@ -309,62 +352,32 @@
   })();
 </script>
 
-<div class="wrap">
-  <header>
-    <div class="brand">
-      <img src="PICO.png" alt="PICO logo">
-      <div class="brand-text">Project <span>PICO</span></div>
-    </div>
-    <h1>Motion Graphic Design Projects</h1>
-    <a href="index.html" class="btn-back">← Back to site</a>
-  </header>
-</div>
+<header>
+  <div class="brand">
+    <img src="PICO.png" alt="PICO logo">
+    <div class="brand-text">Project <span>PICO</span></div>
+  </div>
+  <a href="mobile.html" class="btn-back">← Back to site</a>
+</header>
 
-<div class="grid-outer">
-  <div class="edge-nav left" id="edge-left" aria-label="Scroll left">
-    <svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8"/><path d="M19 4l-8 8 8 8"/></svg>
-  </div>
-  <section class="grid" id="grid"></section>
-  <div class="edge-nav right" id="edge-right" aria-label="Scroll right">
-    <svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8"/><path d="M5 4l8 8-8 8"/></svg>
-  </div>
-</div>
+<main class="feed" id="feed"></main>
 
-<div class="player-modal" id="player-modal">
-  <div class="player-modal-inner">
-    <button class="player-close" id="player-close" aria-label="Close">✕</button>
-    <video id="player-video" controls playsinline></video>
-  </div>
-</div>
+<footer>© 2026 Project PICO. All rights reserved.</footer>
 
 <script>
   // ------------------------------------------------------------------
   // EDIT ME: this is the only place you need to touch to add, remove,
-  // or update a video. The row scrolls horizontally, newest on the
-  // LEFT — to add a new video, paste it as the FIRST object in this
-  // list (top of the array). Everything else shifts right automatically.
+  // or update a video. Newest goes at the TOP of this list — it becomes
+  // the FIRST card someone swipes into. Everything else shifts down.
   //
   // All paths below are relative to this HTML file, so it expects a
-  // "media" folder sitting right next to it (i.e. copy the contents
-  // of C:\Users\JEFF PC\Desktop\ProjectPico\media into a "media"
-  // folder alongside video-reel.html before opening it).
+  // "media" folder sitting right next to it.
   //
-  // videoSrc     : leave empty ("") to show a plain color placeholder;
-  //                fill in a file path (e.g. "media/reel-1.mp4") to
-  //                get a click-to-play video. This is the FULL clip
-  //                that opens in the modal player.
-  // videoSrcWebm : optional — a .webm version of videoSrc, used as a
-  //                fallback for browsers that can't play the mp4.
-  // previewSrc   : optional — a separate, usually shorter/lighter
-  //                clip used for the muted hover-loop on the
-  //                thumbnail. If omitted, videoSrc is reused for the
-  //                hover preview too.
-  // previewSrcWebm : optional .webm fallback for previewSrc.
-  // poster       : optional still image shown before hover (e.g.
-  //                "media/reel-1-poster.jpg"). If left empty, the
-  //                tint1/tint2 gradient is used instead.
-  // views / likes / loves : plain numbers — shown directly on the
-  //                thumbnail, no hover needed.
+  // videoSrc     : the full clip that plays inline, fullscreen, in the feed.
+  // videoSrcWebm : optional .webm fallback for browsers that can't play mp4.
+  // poster       : optional still shown before the video has started playing.
+  //                If left empty, the tint1/tint2 gradient is used instead.
+  // views / likes / loves : plain numbers shown on the overlay.
   // ------------------------------------------------------------------
   const videos = [
     {
@@ -378,7 +391,6 @@
     {
       title: "G2G Bet x 마른형님 Collab",
       videoSrc: "media/V2.mp4",
-      previewSrc: "media/V2-preview.mp4",
       poster: "media/v2-thumbnail.jpg",
       tint1: "#4b2ea8", tint2: "#0a0f0c",
       views: 12400, likes: 892, loves: 340
@@ -386,19 +398,13 @@
     {
       title: "G2G Bet — Daily Bible Verse II",
       videoSrc: "media/v3.mp4",
-      previewSrc: "media/v3-preview.mp4",
       poster: "media/v3-thumbnail.jpg",
       tint1: "#7b1fa2", tint2: "#0a0f0c",
       views: 8600, likes: 511, loves: 198
     },
     {
-      // NOTE: no full-length "v4.mp4" was supplied yet, so this card's
-      // click-to-play currently reuses the short preview clip. Once
-      // you have the full version, just change videoSrc below to
-      // "media/v4.mp4".
       title: "Arsenal v Bayern — Betting Preview",
       videoSrc: "media/v4-preview.mp4",
-      previewSrc: "media/v4-preview.mp4",
       poster: "media/v4-thumbnail.jpg",
       tint1: "#0d1b34", tint2: "#0a0f0c",
       views: 21900, likes: 1720, loves: 940
@@ -406,7 +412,6 @@
     {
       title: "G2G Bet x Habanero",
       videoSrc: "media/v5.mp4",
-      previewSrc: "media/v5-preview.mp4",
       poster: "media/v5-thumbnail.jpg",
       tint1: "#8a3d12", tint2: "#0a0f0c",
       views: 5300, likes: 244, loves: 91
@@ -414,74 +419,37 @@
     {
       title: "G2G Bet x NetEnt",
       videoSrc: "media/v6.mp4",
-      previewSrc: "media/v6-preview.mp4",
       poster: "media/v6-thumbnail.jpg",
       tint1: "#241b4d", tint2: "#0a0f0c",
       views: 9100, likes: 402, loves: 176
     }
   ];
 
-  // ------------------------------------------------------------------
-  // MASTER SIZE CONTROL — edit this one number to resize EVERY video
-  // container at once. It's the minimum width (in px) each card is
-  // allowed to shrink to before the grid drops to fewer columns.
-  // Bigger number = bigger thumbnails (and fewer per row).
-  //   420  → current screenshot look (3 per row on a normal screen)
-  //   320  → smaller, more compact cards
-  //   520+ → very large cards, likely 2 per row
-  // ------------------------------------------------------------------
-  const CARD_MIN_WIDTH = 1120;
-  document.documentElement.style.setProperty('--card-min', CARD_MIN_WIDTH + 'px');
-
-  // ------------------------------------------------------------------
-  // EDGE PAN CONTROLS — master settings for the hover-to-scroll arrows
-  // on the left/right edges. Edit these numbers, nothing else, to
-  // restyle or retune them everywhere at once.
-  // ------------------------------------------------------------------
-  const EDGE_ZONE_WIDTH   = 190;        // px — width of the hoverable strip AND the gradient wash
-  const EDGE_ARROW_SIZE   = 100;         // px — chevron icon size
-  const EDGE_COLOR        = '46,232,143'; // "r,g,b" — drives the arrow, glow, and gradient tint
-  const EDGE_OPACITY_NEAR = 0;       // gradient opacity where the wash starts fading in
-  const EDGE_OPACITY_FAR  = 0;       // gradient opacity right at the screen edge
-  const AUTO_SCROLL_SPEED = 1180;        // px/second — hover-and-hold pan speed
-  const JUMP_SPACES       = 1;          // "double space" — how many card-widths a double-click/double-tap jumps
-
-  document.documentElement.style.setProperty('--edge-width', EDGE_ZONE_WIDTH + 'px');
-  document.documentElement.style.setProperty('--edge-arrow-size', EDGE_ARROW_SIZE + 'px');
-  document.documentElement.style.setProperty('--edge-color', EDGE_COLOR);
-  document.documentElement.style.setProperty('--edge-opacity-near', EDGE_OPACITY_NEAR);
-  document.documentElement.style.setProperty('--edge-opacity-far', EDGE_OPACITY_FAR);
 
   // ------------------------------------------------------------------
   // ICON COLOR MASTER CONTROL — edit these 4 lines to recolor the
   // like (thumbs-up) and love (heart) icons everywhere at once, for
-  // both their normal and "already clicked" states. (These mirror the
-  // --icon-*-color CSS variables in :root — editing either place keeps
-  // both in sync, so use whichever you find easier.)
+  // both their normal and "already clicked" states. (Mirrors the
+  // --icon-*-color CSS variables in :root.)
   // ------------------------------------------------------------------
-  const LIKE_ICON_COLOR        = '#ffffff';  // thumbs-up before you like it
-  const LIKE_ICON_ACTIVE_COLOR = '#2ee88f';  // thumbs-up after you like it
-  const LOVE_ICON_COLOR        = '#ff4d5e';  // heart before you love it
-  const LOVE_ICON_ACTIVE_COLOR = '#ff2740';  // heart after you love it
+  const LIKE_ICON_COLOR        = '#ffffff';
+  const LIKE_ICON_ACTIVE_COLOR = '#2ee88f';
+  const LOVE_ICON_COLOR        = '#ff4d5e';
+  const LOVE_ICON_ACTIVE_COLOR = '#ff2740';
 
   document.documentElement.style.setProperty('--icon-like-color', LIKE_ICON_COLOR);
   document.documentElement.style.setProperty('--icon-like-active-color', LIKE_ICON_ACTIVE_COLOR);
   document.documentElement.style.setProperty('--icon-love-color', LOVE_ICON_COLOR);
   document.documentElement.style.setProperty('--icon-love-active-color', LOVE_ICON_ACTIVE_COLOR);
 
-  const grid = document.getElementById('grid');
+  const feed = document.getElementById('feed');
   const fmt = n => n.toLocaleString('en-US');
 
-  const iconEye  = `<svg class="icon-eye" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>`;
-  // Like/Love are now your uploaded PNGs (drawn as CSS-masked <span>s so
-  // MASTER ICON COLOR CONTROL can recolor them) instead of the old
-  // placeholder SVG shapes.
+  const iconEye = `<svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>`;
   const iconLike = `<span class="icon-like" aria-hidden="true"></span>`;
   const iconLove = `<span class="icon-love" aria-hidden="true"></span>`;
-
-  const modal = document.getElementById('player-modal');
-  const modalVideo = document.getElementById('player-video');
-  const modalClose = document.getElementById('player-close');
+  const iconMute = `<svg class="icon-mute" viewBox="0 0 24 24"><path d="M4 9v6h4l5 5V4L8 9H4z"/><g class="wave"><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a9 9 0 0 1 0 12"/></g></svg>`;
+  const iconChevron = `<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg>`;
 
   function sourceTags(src, webmSrc){
     let tags = `<source src="${src}" type="video/mp4">`;
@@ -489,35 +457,9 @@
     return tags;
   }
 
-  function openPlayer(v){
-    modalVideo.innerHTML = sourceTags(v.videoSrc, v.videoSrcWebm);
-    modal.classList.add('open');
-    modalVideo.load();
-    // play() returns a promise — if the file 404s or autoplay is
-    // blocked, catch it instead of letting it fail silently.
-    const playPromise = modalVideo.play();
-    if(playPromise && playPromise.catch){
-      playPromise.catch(err => console.warn(`Could not play "${v.title}": ${err.message}. Check that the file path "${v.videoSrc}" actually exists.`));
-    }
-  }
-  function closePlayer(){
-    modal.classList.remove('open');
-    modalVideo.pause();
-    modalVideo.removeAttribute('src');
-    modalVideo.innerHTML = '';
-    modalVideo.load();
-  }
-  modalClose.addEventListener('click', closePlayer);
-  modal.addEventListener('click', e => { if(e.target === modal) closePlayer(); });
-  document.addEventListener('keydown', e => { if(e.key === 'Escape') closePlayer(); });
-
   // ------------------------------------------------------------------
-  // LIKE / LOVE persistence — remembers which videos *this browser*
-  // has liked/loved (localStorage) so the count and the button's
-  // active state survive a page refresh. Counts are client-side only
-  // (there's no backend here), so they reflect this visitor's own
-  // engagement layered on top of the starting numbers in the `videos`
-  // array above — they won't sync across different visitors/devices.
+  // LIKE / LOVE persistence — same per-browser localStorage approach as
+  // the desktop grid, so a visitor's engagement survives a refresh.
   // ------------------------------------------------------------------
   const ENGAGEMENT_KEY = 'pico-engagement';
   function slugify(str){
@@ -533,232 +475,288 @@
   }
   const engagement = loadEngagement();
 
+  // One shared "muted" preference across the whole feed — matches how
+  // TikTok/Reels remember your sound choice as you swipe between clips.
+  let globalMuted = true;
+
+  // every marquee strip is driven by one shared loop below instead of
+  // each having its own timer — see "TITLE MARQUEE — SCROLL-REACTIVE
+  // ANIMATION" at the bottom of this script
+  const marqueeTracks = [];
+  function buildTitleMarquee(title){
+    const wrap = document.createElement('div');
+    wrap.className = 'title-marquee';
+    wrap.setAttribute('aria-hidden', 'true'); // decorative repeat of the card's own aria-label
+    const track = document.createElement('div');
+    track.className = 'title-marquee-track';
+    const unit = document.createElement('span');
+    unit.textContent = `${title}  \u25CF  `.repeat(6); // repeated well past any viewport width
+    const unitCopy = unit.cloneNode(true);
+    track.appendChild(unit);
+    track.appendChild(unitCopy);
+    wrap.appendChild(track);
+    return wrap;
+  }
+
   videos.forEach((v, i) => {
-    const card = document.createElement('div');
-    const hasVideo = !!v.videoSrc;
+    const item = document.createElement('div');
     const id = slugify(v.title) || `video-${i}`;
     const state = engagement[id] || { liked:false, loved:false };
-
-    card.className = 'v-card' + (hasVideo ? ' has-video' : '');
-    card.title = v.title;
-    card.setAttribute('aria-label', v.title);
-    card.style.setProperty('--t1', v.tint1);
-    card.style.setProperty('--t2', v.tint2);
-
-    const gradStyle = v.poster ? `background-image:url('${v.poster}');` : '';
     const likeCount = v.likes + (state.liked ? 1 : 0);
     const loveCount = v.loves + (state.loved ? 1 : 0);
 
-    card.innerHTML = `
-      <div class="grad" style="${gradStyle}"></div>
-      ${hasVideo ? `<video class="preview" muted loop playsinline preload="metadata">${sourceTags(v.previewSrc || v.videoSrc, v.previewSrcWebm || v.videoSrcWebm)}</video>` : ''}
+    item.className = 'v-item paused';
+    item.style.setProperty('--t1', v.tint1);
+    item.style.setProperty('--t2', v.tint2);
+    item.setAttribute('aria-label', v.title);
+
+    // thumbnails are loaded straight from your media/ folder — same
+    // as the video files — no embedded data involved
+    const posterSrc = v.poster || '';
+
+    item.innerHTML = `
+      <div class="grad"></div>
+      <div class="v-thumb">${posterSrc ? `<img src="${posterSrc}" alt="" loading="lazy">` : ''}</div>
+      <video playsinline webkit-playsinline muted loop preload="metadata">${sourceTags(v.videoSrc, v.videoSrcWebm)}</video>
       <div class="play-btn"><svg viewBox="0 0 16 16"><path d="M2 1l13 7-13 7z"/></svg></div>
-      <div class="stats-bar">
-        <div class="stat">${iconEye}<span class="stat-num">${fmt(v.views)}</span></div>
-        <button type="button" class="stat-btn like-btn${state.liked ? ' active' : ''}" aria-pressed="${state.liked}" aria-label="Like this video">${iconLike}<span class="stat-num">${fmt(likeCount)}</span></button>
-        <button type="button" class="stat-btn love-btn${state.loved ? ' active' : ''}" aria-pressed="${state.loved}" aria-label="Love this video">${iconLove}<span class="stat-num">${fmt(loveCount)}</span></button>
+      <div class="burst-heart"></div>
+      <div class="v-info">
+        <div class="v-views">${iconEye}<span class="stat-num">${fmt(v.views)}</span></div>
+      </div>
+      <div class="v-actions">
+        <button type="button" class="action-btn mute-btn muted" aria-label="Toggle sound">
+          <span class="action-circle">${iconMute}</span>
+        </button>
+        <button type="button" class="action-btn like-btn${state.liked ? ' active' : ''}" aria-pressed="${state.liked}" aria-label="Like this video">
+          <span class="action-circle">${iconLike}</span>
+          <span class="stat-num">${fmt(likeCount)}</span>
+        </button>
+        <button type="button" class="action-btn love-btn${state.loved ? ' active' : ''}" aria-pressed="${state.loved}" aria-label="Love this video">
+          <span class="action-circle">${iconLove}</span>
+          <span class="stat-num">${fmt(loveCount)}</span>
+        </button>
       </div>
     `;
 
-    if(hasVideo){
-      const previewVid = card.querySelector('video.preview');
+    const video = item.querySelector('video');
+    const thumbImg = item.querySelector('.v-thumb img');
+    const burst = item.querySelector('.burst-heart');
+    const muteBtn = item.querySelector('.mute-btn');
 
-      // Flag a missing/broken file loudly in the console instead of
-      // just having the hover preview silently never appear.
-      previewVid.addEventListener('error', () => {
-        console.warn(`Preview for "${v.title}" failed to load. Check that "${v.previewSrc || v.videoSrc}" exists relative to this HTML file.`);
-      });
+    video.muted = true; // required for autoplay everywhere; unmuted on first tap
 
-      card.addEventListener('mouseenter', () => {
-        const p = previewVid.play();
-        if(p && p.catch) p.catch(() => {}); // ignore benign interrupted-play errors
-      });
-      card.addEventListener('mouseleave', () => { previewVid.pause(); previewVid.currentTime = 0; });
-      card.addEventListener('click', () => openPlayer(v));
+    video.addEventListener('error', () => {
+      console.warn(`"${v.title}" failed to load. Check that "${v.videoSrc}" exists relative to this HTML file.`);
+    });
+
+    // ---- tap = play/pause, fired synchronously inside the gesture ----
+    // iOS Safari only allows video.play() to succeed when it's called
+    // directly inside the click/touch handler; wrapping it in a
+    // setTimeout (as you'd naturally do to "wait and see if a second
+    // tap is coming") breaks that and the video silently refuses to
+    // play. So every tap toggles play/pause immediately, full stop.
+    // A quick second tap layers a "love" on top of that same toggle —
+    // on a real double-tap the two toggles cancel out (play→pause→play),
+    // which is imperceptible under the heart animation.
+    let lastTapTs = 0;
+    item.addEventListener('click', (e) => {
+      if(e.target.closest('.v-actions')) return; // action rail handles its own clicks
+      togglePlay();
+      const now = Date.now();
+      if(now - lastTapTs < 320){
+        loveIt(true); // double tap always loves, never un-loves
+        playHeartBurst();
+      }
+      lastTapTs = now;
+    });
+
+    function togglePlay(){
+      if(video.paused){ safePlay(); } else { video.pause(); item.classList.add('paused'); }
+    }
+    function safePlay(){
+      const p = video.play();
+      if(p && p.catch) p.catch(err => console.warn(`Could not play "${v.title}": ${err.message}`));
+      item.classList.remove('paused');
+    }
+    function playHeartBurst(){
+      burst.classList.remove('play');
+      void burst.offsetWidth; // restart the animation even on rapid double-taps
+      burst.classList.add('play');
     }
 
-    // ---- like / love buttons: exactly ONE +1 per user, persisted per-browser ----
-    // This is a toggle, not a counter you can spam: each click flips this
-    // visitor's own liked/loved flag for this video between true/false, so
-    // the displayed count is always "starting count + (0 or 1)" — never
-    // more than +1, no matter how many times the button is clicked. Click
-    // again to remove your +1. State is per-browser (localStorage), so it
-    // won't sync across different visitors/devices without a real backend.
-    function wireToggle(selector, key, baseCount){
-      const btn = card.querySelector(selector);
+    muteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      globalMuted = !globalMuted;
+      document.querySelectorAll('.v-item video').forEach(vd => vd.muted = globalMuted);
+      document.querySelectorAll('.mute-btn').forEach(b => b.classList.toggle('muted', globalMuted));
+    });
+
+    // ---- like / love: one +1 per visitor, persisted per-browser ----
+    function wireToggle(selector, key, baseCount, forceOnly){
+      const btn = item.querySelector(selector);
       const numEl = btn.querySelector('.stat-num');
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation(); // don't let the click bubble up and open the video modal
-        const isActive = btn.classList.toggle('active'); // flips true/false, never accumulates
+      function apply(isActive){
+        btn.classList.toggle('active', isActive);
         btn.setAttribute('aria-pressed', String(isActive));
-        numEl.textContent = fmt(baseCount + (isActive ? 1 : 0)); // always base + 0 or 1
+        numEl.textContent = fmt(baseCount + (isActive ? 1 : 0));
         const current = loadEngagement();
         current[id] = current[id] || {};
         current[id][key] = isActive;
         saveEngagement(current);
+      }
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const next = forceOnly ? true : !btn.classList.contains('active');
+        apply(next);
+        if(key === 'loved' && next) playHeartBurst();
       });
+      return apply;
     }
     wireToggle('.like-btn', 'liked', v.likes);
-    wireToggle('.love-btn', 'loved', v.loves);
+    const loveIt = wireToggle('.love-btn', 'loved', v.loves, true);
 
-    grid.appendChild(card);
+    // each card sits in its own row, alternating left/right like a
+    // staggered gallery instead of stacking edge-to-edge
+    const row = document.createElement('div');
+    row.className = `v-row ${i % 2 === 0 ? 'align-left' : 'align-right'}`;
+    row.appendChild(item);
+    feed.appendChild(row);
+
+    const marqueeEl = buildTitleMarquee(v.title);
+    feed.appendChild(marqueeEl);
+    const marqueeTrack = marqueeEl.querySelector('.title-marquee-track');
+    const unitWidth = marqueeTrack.firstElementChild.getBoundingClientRect().width;
+    marqueeTracks.push({ track: marqueeTrack, unitWidth, pos: -unitWidth });
+
+    // ---- no more autoplay-on-scroll: videos only play on tap now.
+    // We still pause a clip if the user scrolls it out of view, so
+    // nothing keeps playing off-screen. ----
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(!entry.isIntersecting && !video.paused){
+          video.pause();
+          item.classList.add('paused');
+        }
+      });
+    }, { threshold: [0, 0.5, 1] });
+    observer.observe(item);
   });
 
-  // ---- let a normal mouse wheel scroll the row horizontally too ----
-  // (trackpads and touchscreens already scroll it sideways natively;
-  // this just makes a plain vertical wheel work the same way, since
-  // the page itself no longer scrolls up/down.) Bound to grid-outer
-  // so it also works while hovering the edge-nav arrows.
-  const gridOuter = document.querySelector('.grid-outer');
-  gridOuter.addEventListener('wheel', (e) => {
-    if(e.deltaY === 0) return; // already a horizontal gesture, let it through natively
-    e.preventDefault();
-    grid.scrollLeft += e.deltaY;
-  }, { passive:false });
+  // ------------------------------------------------------------------
+  // THUMBNAIL SCROLL PARALLAX — each card's thumbnail image drifts
+  // smoothly downward/upward inside its frame as you scroll, instead
+  // of sitting frozen while the card itself moves. The image is sized
+  // to 130% of the card's height (see .v-thumb img) so this drift never
+  // exposes empty edges. A tiny lerp (linear-interpolation) toward the
+  // target offset every frame is what makes the motion feel smooth and
+  // slightly trailing, rather than snapping straight to the scroll
+  // position.
+  // ------------------------------------------------------------------
+  const PARALLAX_RANGE = 216; // max px the image drifts from center in either direction
+  const PARALLAX_EASE  = 0.05; // 0–1, lower = smoother/slower catch-up
+
+  const parallaxLayers = Array.from(document.querySelectorAll('.v-thumb img')).map(img => ({
+    img,
+    card: img.closest('.v-item'),
+    current: 0,
+    target: 0
+  }));
+
+  function updateParallaxTargets(){
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    parallaxLayers.forEach(layer => {
+      const rect = layer.card.getBoundingClientRect();
+      const cardCenter = rect.top + rect.height / 2;
+      // -1 when the card center is far above the viewport center,
+      // +1 when far below it — clamped so the drift has a hard limit.
+      const progress = Math.max(-1, Math.min(1, (cardCenter - vh / 2) / vh));
+      layer.target = progress * PARALLAX_RANGE;
+    });
+  }
+
+  function tickParallax(){
+    parallaxLayers.forEach(layer => {
+      layer.current += (layer.target - layer.current) * PARALLAX_EASE;
+      layer.img.style.transform = `translateY(${layer.current.toFixed(2)}px)`;
+    });
+    requestAnimationFrame(tickParallax);
+  }
+
+  window.addEventListener('scroll', updateParallaxTargets, { passive: true });
+  window.addEventListener('resize', updateParallaxTargets);
+  updateParallaxTargets();
+  requestAnimationFrame(tickParallax);
 
   // ------------------------------------------------------------------
-  // EDGE HOVER-TO-PAN — hover the left/right strip and the arrow +
-  // gradient fade in and the row auto-scrolls for as long as the
-  // mouse stays there; move away and it fades out and stops
-  // immediately. Double-click (desktop) or double-tap (touch) on
-  // either strip jumps a fixed distance for fast navigation.
+  // TITLE MARQUEE — SCROLL-REACTIVE ANIMATION
+  // Every strip drifts left-to-right on its own at a slow constant
+  // pace. Scrolling adds a temporary "boost" on top of that pace, and
+  // the DIRECTION of the boost depends on which way you scroll:
+  //   scrolling DOWN -> boost pushes the same way as the resting drift
+  //                      (left-to-right), so it just speeds up
+  //   scrolling UP   -> boost pushes the opposite way (right-to-left),
+  //                      a visible counter-movement against the resting drift
+  // Either way, it eases back down to the plain resting drift once you
+  // stop scrolling.
   //
-  // All of this is detected by mouse/touch COORDINATES on grid-outer
-  // itself (getZone below), not by listeners on the edge-nav strips.
-  // The strips are decorative only (see .edge-nav's pointer-events:none
-  // above) — this is what fixes the like/love/eye buttons on the first
-  // and last card being unclickable whenever they happened to sit
-  // underneath the (previously interactive) 190px-wide hover zone.
+  // Each track holds the title repeated twice back-to-back (built in
+  // buildTitleMarquee above). Sliding that pair back and forth and
+  // wrapping the position by exactly one unit width in whichever
+  // direction it crosses is what makes the loop seamless in BOTH
+  // directions — the two copies line up pixel for pixel at every
+  // wrap point, so the snap is invisible either way.
   // ------------------------------------------------------------------
-  const edgeLeft = document.getElementById('edge-left');
-  const edgeRight = document.getElementById('edge-right');
-  const edgeLeftArrow = edgeLeft.querySelector('svg');
-  const edgeRightArrow = edgeRight.querySelector('svg');
+  const MARQUEE_BASE_SPEED = 0.028;   // px/ms at rest (~28px per second), always left-to-right
+  const MARQUEE_BOOST_GAIN = 0.6;     // how strongly a scroll delta adds to the boost
+  const MARQUEE_MAX_BOOST  = 1.4;     // px/ms — caps how fast a big, fast scroll can push it
+  const MARQUEE_DECAY      = 0.94;    // per-frame easing back down to resting speed
 
-  function getZone(clientX){
-    const rect = gridOuter.getBoundingClientRect();
-    const x = clientX - rect.left;
-    if(x < EDGE_ZONE_WIDTH) return 'left';
-    if(x > rect.width - EDGE_ZONE_WIDTH) return 'right';
-    return null;
-  }
+  // ---- MASTER CONTROL: which way each scroll direction pushes the title ----
+  // 1  = pushes left-to-right (same way as the resting drift, just faster)
+  // -1 = pushes right-to-left (counter-movement against the resting drift)
+  const MARQUEE_DOWN_DIRECTION = 1;   // scrolling the page DOWN
+  const MARQUEE_UP_DIRECTION   = -1;  // scrolling the page UP
 
-  // Tracks whether there's actually more row to reveal in each
-  // direction, so the arrows never invite hovering/tapping into a
-  // dead end. Recomputed on every scroll and on resize.
-  const hasMore = { left:false, right:false };
-  function updateEdgeAvailability(){
-    const maxScroll = grid.scrollWidth - grid.clientWidth;
-    hasMore.left = grid.scrollLeft > 4;
-    hasMore.right = grid.scrollLeft < maxScroll - 4;
-    if(!hasMore.left) edgeLeft.classList.remove('show');
-    if(!hasMore.right) edgeRight.classList.remove('show');
-  }
-  grid.addEventListener('scroll', updateEdgeAvailability);
-  window.addEventListener('resize', updateEdgeAvailability);
-  updateEdgeAvailability();
+  let marqueeBoost = 0;
+  let lastScrollY = window.scrollY;
 
-  // ---- continuous hover-and-hold auto-scroll ----
-  let autoScrollDir = 0;   // -1 left, 0 idle, 1 right
-  let autoScrollRAF = null;
-  let lastTs = null;
+  window.addEventListener('scroll', () => {
+    const currentY = window.scrollY;
+    const dy = currentY - lastScrollY;
+    lastScrollY = currentY;
+    if(dy === 0) return;
 
-  function autoScrollStep(ts){
-    if(lastTs === null) lastTs = ts;
-    const dt = (ts - lastTs) / 1000;
-    lastTs = ts;
-    if(autoScrollDir !== 0){
-      grid.scrollLeft += autoScrollDir * AUTO_SCROLL_SPEED * dt;
-      autoScrollRAF = requestAnimationFrame(autoScrollStep);
-    } else {
-      autoScrollRAF = null;
-      lastTs = null;
-    }
-  }
-  function startAutoScroll(dir){
-    autoScrollDir = dir;
-    if(!autoScrollRAF) autoScrollRAF = requestAnimationFrame(autoScrollStep);
-  }
-  function stopAutoScroll(){
-    autoScrollDir = 0;
-  }
+    const dir = dy > 0 ? MARQUEE_DOWN_DIRECTION : MARQUEE_UP_DIRECTION;
+    const added = Math.abs(dy) * MARQUEE_BOOST_GAIN;
+    // if the scroll direction just flipped, start the boost fresh in the
+    // new direction instead of cancelling it out against the old one
+    const carriedMagnitude = Math.sign(marqueeBoost) === dir || marqueeBoost === 0
+      ? Math.abs(marqueeBoost)
+      : 0;
+    marqueeBoost = dir * Math.min(MARQUEE_MAX_BOOST, carriedMagnitude + added);
+  }, { passive: true });
 
-  // ---- mouse: hover near either edge (anywhere over grid-outer, cards
-  // included) reveals that side's arrow and starts panning; move away
-  // from the zone and it stops. Because this is one listener on the
-  // container instead of two on the strips, it never blocks a click on
-  // whatever is actually under the cursor. ----
-  function updateHoverZone(zone){
-    if(zone === 'left' && hasMore.left){
-      edgeLeft.classList.add('show');
-      startAutoScroll(-1);
-    } else {
-      edgeLeft.classList.remove('show');
-      if(autoScrollDir === -1) stopAutoScroll();
-    }
-    if(zone === 'right' && hasMore.right){
-      edgeRight.classList.add('show');
-      startAutoScroll(1);
-    } else {
-      edgeRight.classList.remove('show');
-      if(autoScrollDir === 1) stopAutoScroll();
-    }
-  }
-  gridOuter.addEventListener('mousemove', (e) => updateHoverZone(getZone(e.clientX)));
-  gridOuter.addEventListener('mouseleave', () => updateHoverZone(null));
-
-  // ---- touch: brief reveal on tap near an edge, since there's no hover ----
-  function revealBriefly(el, dir){
-    if(dir === 1 && !hasMore.right) return;
-    if(dir === -1 && !hasMore.left) return;
-    el.classList.add('show');
-    clearTimeout(el._hideTimer);
-    el._hideTimer = setTimeout(() => el.classList.remove('show'), 1400);
-  }
-  gridOuter.addEventListener('touchstart', (e) => {
-    const t = e.touches[0];
-    if(!t) return;
-    const zone = getZone(t.clientX);
-    if(zone === 'left') revealBriefly(edgeLeft, -1);
-    else if(zone === 'right') revealBriefly(edgeRight, 1);
-  }, { passive:true });
-
-  // ---- double-click / double-tap near an edge = fast jump ("double space") ----
-  function jump(dir){
-    const spaceWidth = CARD_MIN_WIDTH + 24; // 24 = the grid's gap between cards
-    grid.scrollBy({ left: dir * spaceWidth * JUMP_SPACES, behavior:'smooth' });
-  }
-  // ---- clicking the visible arrow icon itself jumps immediately,
-  // instead of the click falling through to the video card underneath
-  // and playing it. ----
-  edgeLeftArrow.addEventListener('click', (e) => { e.stopPropagation(); jump(-1); });
-  edgeRightArrow.addEventListener('click', (e) => { e.stopPropagation(); jump(1); });
-
-  gridOuter.addEventListener('dblclick', (e) => {
-    const zone = getZone(e.clientX);
-    if(zone === 'left') jump(-1);
-    else if(zone === 'right') jump(1);
+  window.addEventListener('resize', () => {
+    marqueeTracks.forEach(t => {
+      t.unitWidth = t.track.firstElementChild.getBoundingClientRect().width;
+    });
   });
 
-  // Manual double-tap detection as a fallback for touch browsers that
-  // don't synthesize a dblclick from two quick taps.
-  const lastTap = { left:0, right:0 };
-  function handleDoubleTap(zone, dir){
-    const now = Date.now();
-    if(now - lastTap[zone] < 350){
-      jump(dir);
-      lastTap[zone] = 0;
-    } else {
-      lastTap[zone] = now;
-    }
+  let lastMarqueeT = performance.now();
+  function tickMarquee(now){
+    const dt = Math.min(now - lastMarqueeT, 50); // clamp so a backgrounded tab doesn't jump on return
+    lastMarqueeT = now;
+    const speed = MARQUEE_BASE_SPEED + marqueeBoost; // can go negative -> visible counter-movement
+    marqueeBoost *= MARQUEE_DECAY;
+    marqueeTracks.forEach(t => {
+      t.pos += speed * dt;
+      if(t.pos >= 0) t.pos -= t.unitWidth;
+      else if(t.pos <= -t.unitWidth) t.pos += t.unitWidth;
+      t.track.style.transform = `translateX(${t.pos.toFixed(2)}px)`;
+    });
+    requestAnimationFrame(tickMarquee);
   }
-  gridOuter.addEventListener('touchend', (e) => {
-    const t = e.changedTouches[0];
-    if(!t) return;
-    const zone = getZone(t.clientX);
-    if(zone === 'left') handleDoubleTap('left', -1);
-    else if(zone === 'right') handleDoubleTap('right', 1);
-  });
+  requestAnimationFrame(tickMarquee);
 </script>
 
 </body>

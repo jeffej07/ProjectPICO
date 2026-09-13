@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PICO — Filipino Digital Solutions Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/devicon/2.15.1/devicon.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root{
+    --bg:#0a0f0c;
+    --panel:#121a15;
+    --line:#1f2b23;
+    --text:#eef2ee;
+    --text-dim:#9fb0a6;
+    --accent-a:#0abb66;
+    --accent-b:#c8f24d;
+    --grad:linear-gradient(135deg,var(--accent-a),var(--accent-b));
+    --radius:14px;
+    --maxw:480px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'Poppins',sans-serif;
+    line-height:1.55;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;line-height:1.15;}
+  a{color:inherit;text-decoration:none;}
+  img,video{max-width:100%;display:block;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px;}
+  .grad-text{
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  /* Blinking caret placed right after the cycling word (Innovation /
+     Creativity / Ingenuity). Its blink easing/speed is driven by the
+     TYPEWRITER MASTER CONTROL script block near the bottom of the file. */
+  .typewriter-cursor{
+    display:inline-block;
+    width:3px;
+    height:0.85em;
+    margin-left:2px;
+    vertical-align:-0.1em;
+    background:var(--accent-a);
+    opacity:1;
+    transition:opacity var(--tw-blink-duration, 500ms) var(--tw-ease, ease);
+  }
+  .typewriter-cursor.is-dim{opacity:0;}
+
+  /* ---- TOP BAR ---- */
+  header{
+    position:sticky;top:0;z-index:100;
+    background:rgba(10,15,12,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;}
+  .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px;}
+  .logo img{height:28px;width:auto;}
+  .menu-btn{
+    background:var(--panel);border:1px solid var(--line);border-radius:50%;
+    width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+    color:var(--text);font-size:16px;cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    outline:none;
+  }
+  /* ---- NAV POPUP MENU ----
+     The menu no longer drops down as an accordion — it "pops" open as
+     a rounded rectangle that scales up from the menu button's corner
+     with a springy overshoot, like a card snapping into place. Each
+     link then fades/slides in one after another. A dimmed backdrop
+     sits behind the panel and closes it on tap. Tune timing/easing in
+     the NAV POPUP MASTER CONTROL script block near the bottom of the
+     file — nothing else here needs to be touched. */
+  /* ---- NAV POPUP MENU ----
+     A near-full-screen panel that "pops" open from the menu button's
+     corner with a springy overshoot. Inside: centered logo + tagline,
+     a big bold link list (each with a "+" and a colored icon chip),
+     a personal greeting, and a footer line — spread across the full
+     height with the greeting/footer pinned toward the bottom. A
+     dimmed backdrop sits behind it and closes it on tap. Tune
+     timing/easing in the NAV POPUP MASTER CONTROL script block near
+     the bottom of the file — nothing else here needs to be touched. */
+  nav#navMenu{
+    position:fixed;
+    top:14px;left:14px;right:14px;bottom:14px;
+    overflow-y:auto;
+    background:var(--nav-bg-color, var(--panel));
+    border:1px solid var(--line);
+    border-radius:26px;
+    box-shadow:0 20px 60px rgba(0,0,0,.55);
+    transform-origin:top right;
+    transform:scale(var(--nav-pop-scale-closed, .12));
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    z-index:200;
+    display:flex;flex-direction:column;
+    padding:26px 26px 22px;
+    transition:transform var(--nav-pop-duration, .5s) var(--nav-pop-ease, cubic-bezier(.34,1.56,.64,1)),
+               opacity .22s ease,
+               visibility 0s linear var(--nav-pop-duration, .5s);
+  }
+  nav#navMenu.open{
+    transform:scale(1);
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+    transition:transform var(--nav-pop-duration, .5s) var(--nav-pop-ease, cubic-bezier(.34,1.56,.64,1)),
+               opacity .22s ease;
+  }
+  .nav-close{
+    position:absolute;top:18px;right:18px;
+    width:34px;height:34px;border-radius:50%;
+    background:var(--bg);border:1px solid var(--line);
+    color:var(--text-dim);font-size:14px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+  }
+  .nav-brand{text-align:center;margin:8px 0 30px;}
+  /* Logo image inside the nav popup — position/scale tuned by the
+     NAV LOGO MASTER CONTROL script block near the bottom of the file. */
+  .nav-brand img{
+    height:56px;width:auto;margin:0 auto 16px;display:block;
+    transform:translate(var(--nav-logo-x, 0px), var(--nav-logo-y, 0px)) scale(var(--nav-logo-scale, 1));
+    transform-origin:center;
+  }
+  /* Tagline under the logo — position/scale/font tuned by the NAV
+     TAGLINE MASTER CONTROL script block; the "Next-gen" word and the
+     rest of the sentence have independent color controls in that
+     same block. */
+  .nav-brand .nav-tagline{
+    line-height:1.45;max-width:260px;margin:0 auto;
+    color:var(--nav-tagline-color, #ffffff);
+    font-family:var(--nav-tagline-font-family, 'Poppins', sans-serif);
+    font-size:var(--nav-tagline-font-size, 14.5px);
+    font-weight:var(--nav-tagline-font-weight, 400);
+    font-style:var(--nav-tagline-font-style, normal);
+    transform:translate(var(--nav-tagline-x, 0px), var(--nav-tagline-y, 0px)) scale(var(--nav-tagline-scale, 1));
+    transform-origin:top center;
+  }
+  .nav-brand .nav-tagline .nav-tagline-highlight{color:var(--nav-tagline-highlight-color, var(--accent-a));}
+  .nav-links{display:flex;flex-direction:column;gap:10px;}
+  .nav-link-row{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:6px 0;
+    opacity:0;
+    transform:translateY(8px);
+    transition:opacity .35s ease, transform .35s ease;
+    transition-delay:var(--link-delay, 0s);
+  }
+  nav#navMenu.open .nav-link-row{opacity:1;transform:translateY(0);}
+  .nav-link-row:nth-child(1){--link-delay:.14s;}
+  .nav-link-row:nth-child(2){--link-delay:.19s;}
+  .nav-link-row:nth-child(3){--link-delay:.24s;}
+  .nav-link-row:nth-child(4){--link-delay:.29s;}
+  .nav-link-row:nth-child(5){--link-delay:.34s;}
+  .nav-link-row:nth-child(6){--link-delay:.39s;}
+  /* Nav link labels (Home / About / Expertise / Projects / Free /
+     Contact) — each gets its own position/font/color set individually
+     by the NAV LINKS MASTER CONTROL script block near the bottom of
+     the file, via the --nav-link-* variables set inline per label. */
+  .nav-link-row .label{
+    display:flex;align-items:baseline;gap:6px;
+    transform:translate(var(--nav-link-x, 0px), var(--nav-link-y, 0px));
+    font-family:var(--nav-link-font-family, 'Space Grotesk', sans-serif);
+    font-weight:var(--nav-link-font-weight, 700);
+    font-style:var(--nav-link-font-style, normal);
+    font-size:var(--nav-link-font-size, 28px);
+    letter-spacing:-0.02em;
+    color:var(--nav-link-color, var(--text));
+  }
+  /* Plus mark next to each label — swapped for the plus_icon.png
+     image and sized/positioned by the NAV PLUS ICON MASTER CONTROL
+     script block. */
+  .nav-link-row .label .nav-plus-icon{
+    width:var(--nav-plus-width, 14px);
+    height:auto;
+    display:inline-block;
+    transform:translate(var(--nav-plus-x, 0px), var(--nav-plus-y, 0px));
+  }
+  .nav-link-row .nav-icon-chip{
+    flex:none;width:32px;height:32px;
+    color:var(--accent-a);font-size:24px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .nav-bottom{margin-top:auto;padding-top:28px;}
+  /* "Nice to see you!" greeting line — position/font/color tuned by
+     the NAV GREETING MASTER CONTROL script block. */
+  .nav-greeting .hi{
+    margin-bottom:8px;
+    transform:translate(var(--nav-greeting-x, 0px), var(--nav-greeting-y, 0px));
+    font-family:var(--nav-greeting-font-family, 'Poppins', sans-serif);
+    font-weight:var(--nav-greeting-font-weight, 600);
+    font-style:var(--nav-greeting-font-style, normal);
+    font-size:var(--nav-greeting-font-size, 14.5px);
+    color:var(--nav-greeting-color, var(--text));
+  }
+  /* Bio line under the greeting — position/font/color tuned by the
+     NAV BIO MASTER CONTROL script block. */
+  .nav-greeting .bio{
+    line-height:1.5;
+    transform:translate(var(--nav-bio-x, 0px), var(--nav-bio-y, 0px));
+    font-family:var(--nav-bio-font-family, 'Poppins', sans-serif);
+    font-weight:var(--nav-bio-font-weight, 400);
+    font-style:var(--nav-bio-font-style, normal);
+    font-size:var(--nav-bio-font-size, 13.5px);
+    color:var(--nav-bio-color, var(--text-dim));
+  }
+  /* Footer line ("Made with ... © 2026") — position/font/color tuned
+     by the NAV FOOTER MASTER CONTROL script block. */
+  .nav-footer{
+    margin-top:22px;text-align:center;
+    transform:translate(var(--nav-footer-x, 0px), var(--nav-footer-y, 0px));
+    font-family:var(--nav-footer-font-family, 'Poppins', sans-serif);
+    font-weight:var(--nav-footer-font-weight, 400);
+    font-style:var(--nav-footer-font-style, normal);
+    font-size:var(--nav-footer-font-size, 12px);
+    color:var(--nav-footer-color, var(--text-dim));
+  }
+  .nav-footer .heart{color:#e0556f;}
+  /* Invisible tap-to-close layer behind the popup panel; no dim/fade,
+     just an overlay so tapping outside the menu closes it. */
+  .nav-backdrop{
+    position:fixed;inset:0;
+    background:transparent;
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transition:opacity var(--nav-bg-duration, .3s) var(--nav-bg-ease-in, cubic-bezier(.42,0,1,1)),
+               visibility 0s linear var(--nav-bg-duration, .3s);
+    z-index:150;
+  }
+  .nav-backdrop.open{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+    transition:opacity var(--nav-bg-duration, .3s) var(--nav-bg-ease-out, cubic-bezier(0,0,.58,1));
+  }
+
+  /* ---- HERO ---- */
+  /* Home/hero background: a faint grid overlay on top of the wavy
+     line artwork. Expects linebg.png to sit in an "assets" folder
+     next to this HTML file (assets/linebg.png). */
+  /* Shared grid + line-art background: the faint grid overlay on top
+     of the wavy line artwork, with a dark top-to-bottom scrim so text
+     stays readable. Expects linebg.png to sit in an "assets" folder
+     next to this HTML file (assets/linebg.png). Reused on the hero,
+     Projects, and Contact sections. */
+  .grid-bg{
+    position:relative;
+    background-color:var(--bg);
+    background-image:
+      repeating-linear-gradient(to right, rgba(255,255,255,.06) 0px, rgba(255,255,255,.06) 1px, transparent 1px, transparent 64px),
+      repeating-linear-gradient(to bottom, rgba(255,255,255,.06) 0px, rgba(255,255,255,.06) 1px, transparent 1px, transparent 64px),
+      linear-gradient(180deg, rgba(10,15,12,.4), rgba(10,15,12,.75)),
+      url('assets/linebg.png');
+    background-repeat:repeat, repeat, no-repeat, no-repeat;
+    background-position:center top, center top, center top, center top;
+    background-size:64px 64px, 64px 64px, cover, cover;
+  }
+  .hero{
+    padding:44px 0 40px;text-align:left;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:6px;
+    font-size:calc(13px * var(--eyebrow-font-scale, 1));color:var(--text-dim);
+    background:var(--panel);border:1px solid var(--line);
+    border-radius:999px;padding:6px 14px;margin-bottom:18px;
+  }
+  .eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--grad);flex:none;}
+  /* Each word of the eyebrow text animates independently: starts blurred,
+     lifted, and invisible, then sharpens into place. See the MASTER CONTROL
+     script block near the bottom of the file to tune ease/blur/timing/scale. */
+  .eyebrow .eb-word{
+    display:inline-block;
+    opacity:0;
+    filter:blur(var(--eb-blur, 8px));
+    transform:translateY(var(--eb-lift, 10px));
+    transition:opacity var(--eb-duration, 650ms) var(--eb-ease, ease),
+               filter var(--eb-duration, 650ms) var(--eb-ease, ease),
+               transform var(--eb-duration, 650ms) var(--eb-ease, ease);
+    will-change:opacity, filter, transform;
+  }
+  .eyebrow .eb-word.is-in{
+    opacity:1;
+    filter:blur(0);
+    transform:translateY(0);
+  }
+  .hero h1{font-size:var(--h1-font-size, 25px);letter-spacing:-0.02em;margin-bottom:16px;}
+  /* The cycling word (Innovation / Creativity / Ingenuity) always sits
+     on its own dedicated line, and that line has a locked min-height.
+     This stops the "warp": without it, the word wrapping onto/off of
+     the line above (as it grows/shrinks/empties while typing) shifts
+     every line above it and the whole hero-visual below it. */
+  .hero h1 .typewriter-line{
+    display:block;
+    min-height:1.15em;
+  }
+  /* The lead paragraph starts blurred and shifted down, then pans
+     upward into sharp focus. See the HERO LEAD TEXT ANIMATION MASTER
+     CONTROL script block near the bottom of the file to tune
+     ease/blur/distance/duration. */
+  .hero p.lead{
+    color:var(--text-dim);font-size:15.5px;margin-bottom:26px;
+    opacity:0;
+    filter:blur(var(--lead-blur, 2px));
+    transform:translateY(var(--lead-distance, 30px));
+    transition:opacity var(--lead-duration, 1.7s) var(--lead-ease, ease-out),
+               filter var(--lead-duration, 1.7s) var(--lead-ease, ease-out),
+               transform var(--lead-duration, 1.7s) var(--lead-ease, ease-out);
+    will-change:opacity, filter, transform;
+  }
+  .hero p.lead.is-in{
+    opacity:1;
+    filter:blur(0);
+    transform:translateY(0);
+  }
+  .hero-visual{
+    max-width:220px;aspect-ratio:1/1;margin:0 auto 30px;
+    border-radius:50%;border:3px solid transparent;
+    background-image:
+      radial-gradient(circle at 35% 30%,rgba(46,232,143,.25),transparent 60%),
+      linear-gradient(var(--panel),var(--panel)),
+      var(--grad);
+    background-origin:border-box;
+    background-clip:padding-box,padding-box,border-box;
+    overflow:hidden;position:relative;
+  }
+  .hero-visual video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .hero-ctas{display:flex;flex-direction:column;gap:12px;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:14px 22px;border-radius:999px;font-weight:600;font-size:15px;
+    border:1px solid transparent;
+  }
+  .btn-primary{background:var(--grad);color:#08130d;}
+  .btn-ghost{border-color:var(--line);color:var(--text);}
+
+  /* ---- SECTION SHELL ---- */
+  section{padding:48px 0;border-top:1px solid var(--line);}
+  .section-title{font-size:24px;letter-spacing:-0.01em;margin-bottom:8px;}
+  .section-sub{color:var(--text-dim);font-size:14.5px;margin-bottom:28px;}
+
+  /* ---- ABOUT ---- */
+  .about-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px;
+  }
+  .about-card p{color:var(--text-dim);font-size:14.5px;}
+  .about-card h3{font-size:19px;margin-bottom:10px;}
+
+  /* ---- EXPERTISE ---- */
+  .tech-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .tech-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;text-align:center;
+  }
+  .tech-card i{font-size:26px;color:var(--accent-a);margin-bottom:8px;display:block;}
+  .tech-card .name{font-weight:600;font-size:14px;}
+  .tech-card .exp{color:var(--text-dim);font-size:12px;margin-top:2px;}
+
+  /* ---- PROJECTS ---- */
+  .project-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;margin-bottom:16px;
+    position:relative;
+  }
+  .project-card .thumb{
+    aspect-ratio:16/10;background:linear-gradient(135deg,#16211a,#0e1512);
+    background-size:cover;background-position:center;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-dim);font-size:13px;letter-spacing:.05em;text-transform:uppercase;
+    position:relative;
+  }
+  .project-card .thumb.thumb-custom{background-image:url('Projects content/Custom_website.jfif');}
+  .project-card .thumb.thumb-pos{background-image:url('Projects content/POS_system.jfif');}
+  .project-card .thumb.thumb-motion{background-image:url('Projects content/motion_graphics.jfif');}
+  .project-card .thumb.thumb-betamaxtv{
+    background-image:url('assets/betamaxtv.jpg');
+    background-size: var(--betamax-scale, 100%) auto;
+    background-position: var(--betamax-pos-x, 50%) var(--betamax-pos-y, 50%);
+  }
+  /* Dark scrim behind the "Coming Soon" label so it stays readable
+     over any thumbnail image. */
+  .project-card .thumb.dim::before{
+    content:"";position:absolute;inset:0;background:rgba(8,12,10,.55);
+  }
+  .project-card .thumb .coming-soon{
+    position:relative;z-index:1;color:#fff;font-weight:800;
+    font-size:24px;line-height:1.15;text-align:center;
+    letter-spacing:.02em;text-transform:uppercase;
+    text-shadow:0 2px 10px rgba(0,0,0,.4);
+  }
+  /* The green info panel with the title + description sits pinned to
+     the bottom of the card, on top of the thumbnail image, always
+     visible now (no hover/tap reveal animation). */
+  .project-card .body{
+    position:absolute;left:0;right:0;bottom:0;
+    background:var(--accent-a);
+    padding:16px;
+  }
+  .project-card h3{font-size:16px;margin-bottom:6px;color:#fff;}
+  .project-card .body p{color:rgba(255,255,255,.9);font-size:13.5px;}
+
+  /* ---- CONTACT ---- */
+  /* Video frame above the contact form. The container itself can be
+     repositioned/scaled, and the video inside it can be independently
+     panned and zoomed, all from the CONTACT VIDEO MASTER CONTROL
+     script block near the bottom of the file. */
+  .contact-video-frame{
+    aspect-ratio:9/16;
+    max-width:100%;
+    margin:0 auto 28px;
+    border-radius:var(--cv-radius, 14px);
+    overflow:hidden;
+    background:var(--panel);
+    border:1px solid var(--line);
+    position:relative;
+    transform:translate(var(--cv-pos-x, 0px), var(--cv-pos-y, 0px)) scale(var(--cv-scale, 1));
+    transform-origin:center;
+  }
+  .contact-video-frame video{
+    width:100%;height:100%;
+    object-fit:cover;
+    transform:translate(var(--cv-video-pos-x, 0px), var(--cv-video-pos-y, 0px)) scale(var(--cv-video-scale, 1));
+    transform-origin:center;
+  }
+  form{display:grid;gap:14px;}
+  label{font-size:13px;color:var(--text-dim);margin-bottom:6px;display:block;}
+  input,select,textarea{
+    width:100%;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:13px 14px;color:var(--text);font-family:inherit;font-size:14.5px;
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-a);border-color:transparent;}
+  textarea{resize:vertical;min-height:100px;}
+  .form-submit-btn{border:none;font-family:inherit;width:100%;}
+  #contactFormStatus{font-size:13.5px;min-height:18px;}
+
+  footer{padding:28px 0 40px;text-align:center;color:var(--text-dim);font-size:12.5px;}
+</style>
+</head>
+<body>
+
+<script>
+  // ---- Auto-switch between desktop/mobile pages on resize/rotate ----
+  // If the window is resized or the device is rotated past the mobile
+  // breakpoint WHILE the visitor is already on this page, jump them to
+  // the matching page instead of leaving them on a layout that no
+  // longer fits. Mirrors the same check used in index.html's loader.
+  (function(){
+    var MOBILE_BREAKPOINT_PX = 600; // keep this in sync across pages
+    var IS_MOBILE_PAGE = true;
+    var DESKTOP_URL = 'home.html';
+    var MOBILE_URL = 'mobile.html';
+
+    function isMobileScreen(){
+      var w = window.innerWidth, h = window.innerHeight;
+      return w <= MOBILE_BREAKPOINT_PX && h > w;
+    }
+
+    var switching = false;
+    function checkAndSwitch(){
+      if (switching) return;
+      if (isMobileScreen() !== IS_MOBILE_PAGE) {
+        switching = true;
+        window.location.href = isMobileScreen() ? MOBILE_URL : DESKTOP_URL;
+      }
+    }
+
+    // Primary: react right away to resize/rotate/orientation events.
+    var resizeTimer = null;
+    function scheduleCheck(){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(checkAndSwitch, 250);
+    }
+    window.addEventListener('resize', scheduleCheck);
+    window.addEventListener('orientationchange', scheduleCheck);
+    if (window.matchMedia) {
+      var orientationQuery = window.matchMedia('(orientation: portrait)');
+      if (orientationQuery.addEventListener) orientationQuery.addEventListener('change', scheduleCheck);
+      else if (orientationQuery.addListener) orientationQuery.addListener(scheduleCheck); // older Safari
+    }
+
+    // Fail-safe: some browsers and DevTools device-emulation "rotate"
+    // animations don't reliably fire a resize event every time, which
+    // is what let this get stuck before. Polling is cheap and
+    // guarantees the page can never get stranded on the wrong layout.
+    setInterval(checkAndSwitch, 600);
+  })();
+</script>
+
+<header>
+  <div class="topbar wrap">
+    <a href="#home" class="logo"><img src="C:\Users\JEFF PC\Desktop\ProjectPico\assets\PICO.png" alt="PICO"><span>Project PICO</span></a>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+  </div>
+</header>
+
+<!-- Nav popup + backdrop live outside <header> on purpose: header uses
+     backdrop-filter, which creates a new containing block in most
+     browsers, so any position:fixed element nested inside it would be
+     sized/positioned relative to the header's small box instead of
+     the full viewport. Keeping these as direct body children keeps
+     the panel truly full-screen. -->
+<div class="nav-backdrop" id="navBackdrop"></div>
+<nav id="navMenu">
+  <button class="nav-close" id="navClose" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
+  <div class="nav-brand">
+    <img id="navLogoImg" src="C:\Users\JEFF PC\Desktop\ProjectPico\assets\PICO.png" alt="PICO">
+    <p class="nav-tagline" id="navTaglineText"><span class="nav-tagline-highlight">N</span><span class="nav-tagline-rest">ext-gen tech solutions and digital experiences.</span></p>
+  </div>
+  <div class="nav-links">
+    <a href="#home" class="nav-link-row"><span class="label" id="navLinkHome">Home<img class="nav-plus-icon" src="assets/plus_icon.png" alt="+"></span><span class="nav-icon-chip"><i class="fa-solid fa-house"></i></span></a>
+    <a href="#about" class="nav-link-row"><span class="label" id="navLinkAbout">About<img class="nav-plus-icon" src="assets/plus_icon.png" alt="+"></span><span class="nav-icon-chip"><i class="fa-solid fa-id-card"></i></span></a>
+    <a href="#expertise" class="nav-link-row"><span class="label" id="navLinkExpertise">Expertise<img class="nav-plus-icon" src="assets/plus_icon.png" alt="+"></span><span class="nav-icon-chip"><i class="fa-solid fa-list"></i></span></a>
+    <a href="#projects" class="nav-link-row"><span class="label" id="navLinkProjects">Projects<img class="nav-plus-icon" src="assets/plus_icon.png" alt="+"></span><span class="nav-icon-chip"><i class="fa-solid fa-table-cells-large"></i></span></a>
+    <a href="#free" class="nav-link-row"><span class="label" id="navLinkFree">Free<img class="nav-plus-icon" src="assets/plus_icon.png" alt="+"></span><span class="nav-icon-chip"><i class="fa-solid fa-gift"></i></span></a>
+    <a href="#contact" class="nav-link-row"><span class="label" id="navLinkContact">Contact<img class="nav-plus-icon" src="assets/plus_icon.png" alt="+"></span><span class="nav-icon-chip"><i class="fa-solid fa-user"></i></span></a>
+  </div>
+  <div class="nav-bottom">
+    <div class="nav-greeting">
+      <p class="hi" id="navGreetingText">🖐️ Nice to see you!</p>
+      <p class="bio" id="navBioText">I'm Jeff Fabrigar, a web developer and designer based in Manila, Philippines.</p>
+    </div>
+    <div class="nav-footer" id="navFooterText">Made with <span class="heart">❤️</span> by Project Pico<br>© 2026</div>
+  </div>
+</nav>
+
+
+<section class="hero grid-bg" id="home">
+  <div class="wrap">
+    <h1>Crafting Digital Solutions, Empowering Filipino<span class="typewriter-line"><span class="grad-text" id="typewriterText">Innovation</span><span class="typewriter-cursor" id="typewriterCursor" aria-hidden="true"></span></span></h1>
+    <div class="hero-visual">
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="websiteloopvideo.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="hero-ctas">
+      <a href="#portfolio-anchor" class="btn btn-primary" onclick="document.getElementById('projects').scrollIntoView()">View our work</a>
+      <a href="#contact" class="btn btn-ghost">Start a project</a>
+      <a href="#contact" class="btn btn-primary">Help us Build</a>
+    </div>
+  </div>
+</section>
+
+
+<section id="expertise">
+  <div class="wrap">
+    <h2 class="section-title">Our Expertise</h2>
+    <p class="section-sub">We specialize in cutting-edge website development and design, leveraging modern frameworks to build high-performing digital solutions.</p>
+    <div class="tech-grid">
+      <div class="tech-card"><i class="devicon-react-original colored"></i><div class="name">React</div><div class="exp">8 months</div></div>
+      <div class="tech-card"><i class="devicon-python-plain colored"></i><div class="name">Python</div><div class="exp">2 years</div></div>
+      <div class="tech-card"><i class="devicon-java-plain colored"></i><div class="name">Java</div><div class="exp">1 year</div></div>
+      <div class="tech-card"><i class="devicon-php-plain colored"></i><div class="name">PHP</div><div class="exp">3 years</div></div>
+      <div class="tech-card"><i class="devicon-mysql-plain colored"></i><div class="name">MySQL</div><div class="exp">3 years</div></div>
+      <div class="tech-card"><i class="fa-brands fa-adobe" style="color:#31A8FF"></i><div class="name">Photoshop</div><div class="exp">5 years</div></div>
+      <div class="tech-card"><i class="fa-solid fa-film" style="color:#9999FF"></i><div class="name">Premiere Pro</div><div class="exp">5 years</div></div>
+      <div class="tech-card"><i class="fa-solid fa-wand-magic-sparkles" style="color:#CF96FE"></i><div class="name">After Effects</div><div class="exp">4 years</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="projects" class="grid-bg">
+  <div class="wrap">
+    <h2 class="section-title">Latest Projects</h2>
+    <div class="project-card">
+      <div class="thumb thumb-custom dim"><span class="coming-soon">Coming Soon</span></div>
+      <div class="body"><h3>Custom Website</h3><p>Tailored design matches unique brand.</p></div>
+    </div>
+    <div class="project-card">
+      <div class="thumb thumb-pos dim"><span class="coming-soon">Coming Soon</span></div>
+      <div class="body"><h3>POS System</h3><p>Fast, reliable checkout built for retail.</p></div>
+    </div>
+    <a class="project-card" href="Motion_Graphics_Project_Mobile.html" style="display:block;">
+      <div class="thumb thumb-motion"></div>
+      <div class="body"><h3>Motion Graphics</h3><p>Animated visuals that bring brands to life.</p></div>
+    </a>
+  </div>
+</section>
+
+<section id="free">
+  <div class="wrap">
+    <h2 class="section-title">Freebies for everyone!</h2>
+    <a class="project-card" href="https://betamaxtv.netlify.app/" target="_blank" rel="noopener" style="display:block;">
+      <div class="thumb thumb-betamaxtv"></div>
+      <div class="body">
+        <h3>BetamaxTV</h3>
+        <p>Free to watch, request and download your favorite movies to your device.</p>
+      </div>
+    </a>
+  </div>
+</section>
+
+<section id="contact" class="grid-bg">
+  <div class="wrap">
+    <div class="contact-video-frame" id="contactVideoFrame">
+      <video id="contactVideoEl" autoplay muted loop playsinline>
+        <source id="contactVideoSource" src="" type="video/mp4">
+      </video>
+    </div>
+    <h2 class="section-title">Let's Build Something!</h2>
+    <p class="section-sub">Tell us about your project and we'll get back to you soon.</p>
+    <form id="contactForm">
+      <div>
+        <label for="full_name">Full name</label>
+        <input type="text" id="full_name" name="full_name" required>
+      </div>
+      <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div>
+        <label for="need">What do you need?</label>
+        <select id="need" name="need">
+          <option value="Website">Website</option>
+          <option value="Mobile Application">Mobile Application</option>
+          <option value="Inventory System">Inventory System</option>
+          <option value="Game Development">Game Development</option>
+          <option value="I want to be Collaborator">I want to be Collaborator</option>
+          <option value="Something else">Something else</option>
+        </select>
+      </div>
+      <div>
+        <label for="company">Company (optional)</label>
+        <input type="text" id="company" name="company">
+      </div>
+      <div>
+        <label for="project">Tell us about your project</label>
+        <textarea id="project" name="project"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary form-submit-btn">Send Message</button>
+      <p id="contactFormStatus"></p>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">© 2026 Project PICO. All rights reserved.</div>
+</footer>
+
+<!-- ==================================================================
+     NAV POPUP MENU — MASTER CONTROL
+     Single place to tune how the menu button "pops" the nav panel
+     open: how long the scale-up takes (duration) and the easing curve
+     that gives it its spring/overshoot feel (ease). Change a value
+     below and reload the page — nothing else in this file needs to
+     be touched.
+     ================================================================== -->
+<script>
+  const NAV_POP_CONFIG = {
+    duration: 0.5,                       // seconds for the panel to scale open/closed
+    ease: 'cubic-bezier(1,-0.01,.39,.67))'  // smooth ease-out, no overshoot/bounce
+  };
+
+  const menuBtn = document.getElementById('menuBtn');
+  const navMenu = document.getElementById('navMenu');
+  const navBackdrop = document.getElementById('navBackdrop');
+  const navClose = document.getElementById('navClose');
+  const menuBtnIcon = menuBtn.querySelector('i');
+
+  navMenu.style.setProperty('--nav-pop-duration', NAV_POP_CONFIG.duration + 's');
+  navMenu.style.setProperty('--nav-pop-ease', NAV_POP_CONFIG.ease);
+
+  function openMenu(){
+    navMenu.classList.add('open');
+    navBackdrop.classList.add('open');
+    menuBtnIcon.classList.remove('fa-bars');
+    menuBtnIcon.classList.add('fa-xmark');
+    menuBtn.setAttribute('aria-label', 'Close menu');
+  }
+  function closeMenu(){
+    navMenu.classList.remove('open');
+    navBackdrop.classList.remove('open');
+    menuBtnIcon.classList.remove('fa-xmark');
+    menuBtnIcon.classList.add('fa-bars');
+    menuBtn.setAttribute('aria-label', 'Open menu');
+  }
+
+  menuBtn.addEventListener('click', () => {
+    navMenu.classList.contains('open') ? closeMenu() : openMenu();
+  });
+  navClose.addEventListener('click', closeMenu);
+  navMenu.querySelectorAll('.nav-link-row').forEach(a => {
+    a.addEventListener('click', closeMenu);
+  });
+  navBackdrop.addEventListener('click', closeMenu);
+</script>
+
+<!-- ==================================================================
+     NAV LOGO — MASTER CONTROL
+     Position and scale of the logo image at the top of the nav popup.
+     Change a value below and reload the page — nothing else in this
+     file needs to be touched.
+     ================================================================== -->
+<script>
+  const NAV_LOGO_CONFIG = {
+    x: 0,      // px, shifts the logo right (+) or left (-) from its normal spot
+    y: 0,      // px, shifts the logo down (+) or up (-) from its normal spot
+    scale: 1.5   // 1 = normal size, 1.2 = 20% bigger, 0.8 = 20% smaller
+  };
+
+  const navLogoImg = document.getElementById('navLogoImg');
+  navLogoImg.style.setProperty('--nav-logo-x', NAV_LOGO_CONFIG.x + 'px');
+  navLogoImg.style.setProperty('--nav-logo-y', NAV_LOGO_CONFIG.y + 'px');
+  navLogoImg.style.setProperty('--nav-logo-scale', NAV_LOGO_CONFIG.scale);
+</script>
+
+<!-- ==================================================================
+     NAV TAGLINE — MASTER CONTROL
+     Position/scale/font of the "Next-gen tech solutions and digital
+     experiences." line under the logo, plus separate colors for the
+     "Next-gen" word and the rest of the sentence.
+     ================================================================== -->
+<script>
+  const NAV_TAGLINE_CONFIG = {
+    x: 0,                     // px, left(-)/right(+) shift
+    y: 0,                     // px, up(-)/down(+) shift
+    scale: 1,                 // 1 = normal size
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 20,           // px
+    fontWeight: 400,
+    fontStyle: 'normal',      // 'normal' or 'italic'
+    highlightColor: '#c8f24d',// color of the word "Next-gen"
+    textColor: '#ffffff'      // color of the rest of the sentence
+  };
+
+  const navTaglineText = document.getElementById('navTaglineText');
+  navTaglineText.style.setProperty('--nav-tagline-x', NAV_TAGLINE_CONFIG.x + 'px');
+  navTaglineText.style.setProperty('--nav-tagline-y', NAV_TAGLINE_CONFIG.y + 'px');
+  navTaglineText.style.setProperty('--nav-tagline-scale', NAV_TAGLINE_CONFIG.scale);
+  navTaglineText.style.setProperty('--nav-tagline-font-family', NAV_TAGLINE_CONFIG.fontFamily);
+  navTaglineText.style.setProperty('--nav-tagline-font-size', NAV_TAGLINE_CONFIG.fontSize + 'px');
+  navTaglineText.style.setProperty('--nav-tagline-font-weight', NAV_TAGLINE_CONFIG.fontWeight);
+  navTaglineText.style.setProperty('--nav-tagline-font-style', NAV_TAGLINE_CONFIG.fontStyle);
+  navTaglineText.style.setProperty('--nav-tagline-color', NAV_TAGLINE_CONFIG.textColor);
+  navTaglineText.style.setProperty('--nav-tagline-highlight-color', NAV_TAGLINE_CONFIG.highlightColor);
+</script>
+
+<!-- ==================================================================
+     NAV LINKS — MASTER CONTROL
+     Home / About / Expertise / Projects / Free / Contact each get
+     their own position, font, and color — edit any link's entry
+     below independently of the others.
+     ================================================================== -->
+<script>
+  const NAV_LINKS_CONFIG = {
+    home:      { x: 0, y: 0, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 32, fontWeight: 900, fontStyle: 'normal', color: '#eef2ee' },
+    about:     { x: 0, y: 0, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 32, fontWeight: 900, fontStyle: 'normal', color: '#eef2ee' },
+    expertise: { x: 0, y: 0, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 32, fontWeight: 900, fontStyle: 'normal', color: '#eef2ee' },
+    projects:  { x: 0, y: 0, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 32, fontWeight: 900, fontStyle: 'normal', color: '#eef2ee' },
+    free:      { x: 0, y: 0, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 32, fontWeight: 900, fontStyle: 'normal', color: '#eef2ee' },
+    contact:   { x: 0, y: 0, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 32, fontWeight: 900, fontStyle: 'normal', color: '#eef2ee' }
+  };
+
+  const navLinkIds = {
+    home: 'navLinkHome', about: 'navLinkAbout', expertise: 'navLinkExpertise',
+    projects: 'navLinkProjects', free: 'navLinkFree', contact: 'navLinkContact'
+  };
+
+  Object.keys(NAV_LINKS_CONFIG).forEach((key) => {
+    const el = document.getElementById(navLinkIds[key]);
+    if (!el) return;
+    const cfg = NAV_LINKS_CONFIG[key];
+    el.style.setProperty('--nav-link-x', cfg.x + 'px');
+    el.style.setProperty('--nav-link-y', cfg.y + 'px');
+    el.style.setProperty('--nav-link-font-family', cfg.fontFamily);
+    el.style.setProperty('--nav-link-font-size', cfg.fontSize + 'px');
+    el.style.setProperty('--nav-link-font-weight', cfg.fontWeight);
+    el.style.setProperty('--nav-link-font-style', cfg.fontStyle);
+    el.style.setProperty('--nav-link-color', cfg.color);
+  });
+</script>
+
+<!-- ==================================================================
+     NAV PLUS ICON — MASTER CONTROL
+     Swaps the "+" mark after each link label for the plus_icon.png
+     image and controls its size/position. Applies to all six links
+     at once. Expects plus_icon.png in the "assets" folder next to
+     this HTML file (assets/plus_icon.png).
+     ================================================================== -->
+<script>
+  const NAV_PLUS_ICON_CONFIG = {
+    width: 16, // px, icon width (height scales automatically)
+    x: 0,      // px, left(-)/right(+) shift
+    y: 0       // px, up(-)/down(+) shift
+  };
+
+  document.querySelectorAll('.nav-plus-icon').forEach((img) => {
+    img.style.setProperty('--nav-plus-width', NAV_PLUS_ICON_CONFIG.width + 'px');
+    img.style.setProperty('--nav-plus-x', NAV_PLUS_ICON_CONFIG.x + 'px');
+    img.style.setProperty('--nav-plus-y', NAV_PLUS_ICON_CONFIG.y + 'px');
+  });
+</script>
+
+<!-- ==================================================================
+     NAV GREETING — MASTER CONTROL
+     Position/font/color of the "Nice to see you!" line.
+     ================================================================== -->
+<script>
+  const NAV_GREETING_CONFIG = {
+    x: 0, y: 0,
+    fontFamily: "'Poppins', sans-serif",
+    fontSize: 18,
+    fontWeight: 600,
+    fontStyle: 'normal',
+    color: '#eef2ee'
+  };
+
+  const navGreetingText = document.getElementById('navGreetingText');
+  navGreetingText.style.setProperty('--nav-greeting-x', NAV_GREETING_CONFIG.x + 'px');
+  navGreetingText.style.setProperty('--nav-greeting-y', NAV_GREETING_CONFIG.y + 'px');
+  navGreetingText.style.setProperty('--nav-greeting-font-family', NAV_GREETING_CONFIG.fontFamily);
+  navGreetingText.style.setProperty('--nav-greeting-font-size', NAV_GREETING_CONFIG.fontSize + 'px');
+  navGreetingText.style.setProperty('--nav-greeting-font-weight', NAV_GREETING_CONFIG.fontWeight);
+  navGreetingText.style.setProperty('--nav-greeting-font-style', NAV_GREETING_CONFIG.fontStyle);
+  navGreetingText.style.setProperty('--nav-greeting-color', NAV_GREETING_CONFIG.color);
+</script>
+
+<!-- ==================================================================
+     NAV BIO — MASTER CONTROL
+     Position/font/color of the "I'm Jeff Fabrigar..." line.
+     ================================================================== -->
+<script>
+  const NAV_BIO_CONFIG = {
+    x: 0, y: 0,
+    fontFamily: "'Poppins', sans-serif",
+    fontSize: 15,
+    fontWeight: 400,
+    fontStyle: 'normal',
+    color: '#9fb0a6'
+  };
+
+  const navBioText = document.getElementById('navBioText');
+  navBioText.style.setProperty('--nav-bio-x', NAV_BIO_CONFIG.x + 'px');
+  navBioText.style.setProperty('--nav-bio-y', NAV_BIO_CONFIG.y + 'px');
+  navBioText.style.setProperty('--nav-bio-font-family', NAV_BIO_CONFIG.fontFamily);
+  navBioText.style.setProperty('--nav-bio-font-size', NAV_BIO_CONFIG.fontSize + 'px');
+  navBioText.style.setProperty('--nav-bio-font-weight', NAV_BIO_CONFIG.fontWeight);
+  navBioText.style.setProperty('--nav-bio-font-style', NAV_BIO_CONFIG.fontStyle);
+  navBioText.style.setProperty('--nav-bio-color', NAV_BIO_CONFIG.color);
+</script>
+
+<!-- ==================================================================
+     NAV FOOTER — MASTER CONTROL
+     Position/font/color of the "Made with ❤️ by Project Pico © 2026"
+     line at the bottom of the nav popup.
+     ================================================================== -->
+<script>
+  const NAV_FOOTER_CONFIG = {
+    x: 0, y: 0,
+    fontFamily: "'Poppins', sans-serif",
+    fontSize: 12,
+    fontWeight: 400,
+    fontStyle: 'normal',
+    color: '#9fb0a6'
+  };
+
+  const navFooterText = document.getElementById('navFooterText');
+  navFooterText.style.setProperty('--nav-footer-x', NAV_FOOTER_CONFIG.x + 'px');
+  navFooterText.style.setProperty('--nav-footer-y', NAV_FOOTER_CONFIG.y + 'px');
+  navFooterText.style.setProperty('--nav-footer-font-family', NAV_FOOTER_CONFIG.fontFamily);
+  navFooterText.style.setProperty('--nav-footer-font-size', NAV_FOOTER_CONFIG.fontSize + 'px');
+  navFooterText.style.setProperty('--nav-footer-font-weight', NAV_FOOTER_CONFIG.fontWeight);
+  navFooterText.style.setProperty('--nav-footer-font-style', NAV_FOOTER_CONFIG.fontStyle);
+  navFooterText.style.setProperty('--nav-footer-color', NAV_FOOTER_CONFIG.color);
+</script>
+
+<!-- ==================================================================
+     NAV POPUP BACKGROUND — MASTER CONTROL
+     Solid background color of the nav popup panel itself, plus the
+     fade timing of the dimmed backdrop behind it: how long the fade
+     takes (duration/"speed"), and separate easing curves for opening
+     (easeOut) vs closing (easeIn) so each direction can feel
+     different. Each ease is a cubic-bezier(x1,y1,x2,y2) — edit the 4
+     numbers freely, or swap in 'linear' / 'ease' for no curve at all.
+     Change a value below and reload the page — nothing else in this
+     file needs to be touched.
+     ================================================================== -->
+<script>
+  const NAV_BG_CONFIG = {
+    color: '#121a15',                       // currently the same as --panel; set any solid color
+    duration: 0.8,                          // seconds for the backdrop to fade in/out ("speed")
+    easeOut: 'cubic-bezier(1,0,.83,.43)',  // used when the menu OPENS (backdrop fades in)
+    easeIn: 'cubic-bezier(1,0,.38,.93)'    // used when the menu CLOSES (backdrop fades out)
+  };
+
+  navMenu.style.setProperty('--nav-bg-color', NAV_BG_CONFIG.color);
+  navBackdrop.style.setProperty('--nav-bg-duration', NAV_BG_CONFIG.duration + 's');
+  navBackdrop.style.setProperty('--nav-bg-ease-out', NAV_BG_CONFIG.easeOut);
+  navBackdrop.style.setProperty('--nav-bg-ease-in', NAV_BG_CONFIG.easeIn);
+</script>
+
+
+<script>
+  const TYPEWRITER_CONFIG = {
+    // The words the headline cycles through, in order, looping forever.
+    words: ['Innovation', 'Creativity', 'Ingenuity'],
+
+    // EASE — the CSS easing curve used for the cursor's blink fade.
+    // Any valid CSS easing keyword or cubic-bezier() string works.
+    ease: 'ease-in-out',
+
+    // TYPING SPEED — how long each character takes to appear while a
+    // word is being typed out, in milliseconds. Lower = faster typing.
+    typingSpeed: 130,
+
+    // DELETING SPEED — how long each character takes to disappear while
+    // a word is being erased, in milliseconds. Lower = faster deleting.
+    deletingSpeed: 70,
+
+    // How long a fully-typed word stays on screen before it starts
+    // deleting, in milliseconds.
+    holdDuration: 1200,
+
+    // How long to pause on an empty word after deleting finishes and
+    // before the next word starts typing, in milliseconds.
+    pauseBeforeTyping: 300,
+
+    // How fast the cursor blinks (one fade in or out), in milliseconds.
+    cursorBlinkSpeed: 500
+  };
+
+  function initTypewriter(config) {
+    const textEl = document.getElementById('typewriterText');
+    const cursorEl = document.getElementById('typewriterCursor');
+    if (!textEl) return;
+
+    let wordIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+
+    function tick() {
+      const currentWord = config.words[wordIndex];
+
+      if (!deleting) {
+        charIndex++;
+        textEl.textContent = currentWord.slice(0, charIndex);
+
+        if (charIndex === currentWord.length) {
+          deleting = true;
+          setTimeout(tick, config.holdDuration);
+          return;
+        }
+        setTimeout(tick, config.typingSpeed);
+      } else {
+        charIndex--;
+        textEl.textContent = currentWord.slice(0, charIndex);
+
+        if (charIndex === 0) {
+          deleting = false;
+          wordIndex = (wordIndex + 1) % config.words.length;
+          setTimeout(tick, config.pauseBeforeTyping);
+          return;
+        }
+        setTimeout(tick, config.deletingSpeed);
+      }
+    }
+
+    tick();
+
+    // The cursor blinks continuously and independently of the typing
+    // rhythm above, the same way a real text-editor caret behaves.
+    if (cursorEl) {
+      cursorEl.style.setProperty('--tw-ease', config.ease);
+      cursorEl.style.setProperty('--tw-blink-duration', config.cursorBlinkSpeed + 'ms');
+      setInterval(() => cursorEl.classList.toggle('is-dim'), config.cursorBlinkSpeed);
+    }
+  }
+
+  initTypewriter(TYPEWRITER_CONFIG);
+</script>
+
+<!-- ==================================================================
+     HERO HEADLINE — MASTER CONTROL
+     Tune the size of the whole "Crafting Digital Solutions, Empowering
+     Filipino [Innovation]" headline from one place. Change the value
+     below and reload the page — nothing else needs to be touched.
+     ================================================================== -->
+<script>
+  const HERO_HEADLINE_CONFIG = {
+    // FONT SIZE — the hero h1's font size, in pixels. Everything else
+    // about the headline (line height, spacing, the typewriter word)
+    // scales naturally along with it.
+    fontSize: 32
+  };
+
+  function initHeroHeadline(config) {
+    document.documentElement.style.setProperty('--h1-font-size', config.fontSize + 'px');
+  }
+
+  initHeroHeadline(HERO_HEADLINE_CONFIG);
+</script>
+
+<!-- ==================================================================
+     HERO LEAD TEXT ANIMATION — MASTER CONTROL
+     This is the single place to tune how the hero's lead paragraph
+     ("It started with messing around...") animates in: it starts
+     blurred and shifted downward, then pans upward into sharp focus.
+     Change a value below and reload the page — nothing else in this
+     file needs to be touched.
+     ================================================================== -->
+<script>
+  const LEAD_DURATION = 1.7;
+  const LEAD_EASE = 'ease-out'; // smooth, quick-start reveal (recommended)
+  // const LEAD_EASE = 'ease';                              // gentle default easing
+  // const LEAD_EASE = 'ease-in-out';                       // symmetric ease-in-out
+  // const LEAD_EASE = 'cubic-bezier(.16,.8,.3,1)';         // snappy, fast-out reveal
+  const LEAD_BLUR = 2;
+  const LEAD_DISTANCE = 30;
+
+  function initHeroLeadAnimation() {
+    const lead = document.querySelector('.hero p.lead');
+    if (!lead) return;
+
+    lead.style.setProperty('--lead-duration', LEAD_DURATION + 's');
+    lead.style.setProperty('--lead-ease', LEAD_EASE);
+    lead.style.setProperty('--lead-blur', LEAD_BLUR + 'px');
+    lead.style.setProperty('--lead-distance', LEAD_DISTANCE + 'px');
+
+    // Force a reflow so the browser registers the blurred/offset
+    // starting state above before "is-in" is added — otherwise some
+    // browsers may skip straight to the end state without transitioning.
+    void lead.offsetWidth;
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        lead.classList.add('is-in');
+      });
+    });
+  }
+
+  initHeroLeadAnimation();
+</script>
+
+<!-- ==================================================================
+     Same Firebase contact-form wiring as the desktop page: submissions
+     go to the "contactSubmissions" collection in Firestore.
+     ================================================================== -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBWmS8ErHsxJLhyA9oY7U3UyCemcwY4AA",
+    authDomain: "project-pico-ccc07.firebaseapp.com",
+    projectId: "project-pico-ccc07",
+    storageBucket: "project-pico-ccc07.firebasestorage.app",
+    messagingSenderId: "68882929111",
+    appId: "1:68882929111:web:0270da7fb9874e69b2e792",
+    measurementId: "G-KJVRJ0Q6HP"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const contactForm = document.getElementById('contactForm');
+  const statusEl = document.getElementById('contactFormStatus');
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = contactForm.querySelector('.form-submit-btn');
+      const originalBtnText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+      statusEl.textContent = '';
+      statusEl.style.color = '';
+
+      const formData = new FormData(contactForm);
+      const payload = {
+        fullName: formData.get('full_name')?.trim() || '',
+        email: formData.get('email')?.trim() || '',
+        need: formData.get('need') || '',
+        company: formData.get('company')?.trim() || '',
+        project: formData.get('project')?.trim() || '',
+        submittedAt: serverTimestamp()
+      };
+
+      try {
+        await addDoc(collection(db, 'contactSubmissions'), payload);
+        contactForm.reset();
+        statusEl.style.color = 'var(--accent-a)';
+        statusEl.textContent = "Thanks! Your message has been sent — we'll get back to you soon.";
+      } catch (err) {
+        console.error('Error sending contact form:', err);
+        statusEl.style.color = '#ff6b6b';
+        statusEl.textContent = 'Something went wrong sending your message. Please try again.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+      }
+    });
+  }
+</script>
+
+<!-- ==================================================================
+     BETAMAXTV THUMBNAIL — MASTER CONTROL
+     Single place to tune the BetamaxTV freebie thumbnail: pan it
+     (posX/posY, in %) and zoom it (scale, in %) without touching any
+     other markup or CSS. Change a value below and reload the page.
+     ================================================================== -->
+<script>
+  const BETAMAX_THUMB_CONFIG = {
+    // POSITION — where the image is anchored inside its frame.
+    // 0% = left/top edge, 50% = centered, 100% = right/bottom edge.
+    posX: 50,
+    posY: 10,
+    // SCALE — zoom level of the image, in %. 100% shows it at its
+    // natural fit-to-width size; higher values zoom in (crop more),
+    // lower values zoom out (may reveal empty space at the edges).
+    scale: 100
+  };
+
+  function initBetamaxThumb(config) {
+    const thumb = document.querySelector('.thumb-betamaxtv');
+    if (!thumb) return;
+    thumb.style.setProperty('--betamax-pos-x', config.posX + '%');
+    thumb.style.setProperty('--betamax-pos-y', config.posY + '%');
+    thumb.style.setProperty('--betamax-scale', config.scale + '%');
+  }
+
+  initBetamaxThumb(BETAMAX_THUMB_CONFIG);
+</script>
+
+<!-- ==================================================================
+     CONTACT VIDEO — MASTER CONTROL
+     Single place to tune the video block above the contact form.
+     Change a value below and reload the page — nothing else in this
+     file needs to be touched.
+     ================================================================== -->
+<script>
+  const CONTACT_VIDEO_CONFIG = {
+    // ROUNDED CORNERS — border-radius of the container, in px.
+    radius: 14,
+
+    // CONTAINER SCALE — zoom level of the whole container. 1 = normal
+    // size, 1.1 = 10% bigger, 0.9 = 10% smaller.
+    containerScale: 1,
+
+    // CONTAINER POSITION — shifts the whole container from its normal
+    // spot, in px. Positive x moves right, positive y moves down.
+    containerPosX: 0,
+    containerPosY: 0,
+
+    // VIDEO POSITION (inside the container) — pans the video within
+    // its frame, in px. Positive x pans right, positive y pans down.
+    // Useful for recentering the subject after zooming in with
+    // videoScale below.
+    videoPosX: 0,
+    videoPosY: 0,
+
+    // VIDEO SCALE — zoom level of the video inside the container.
+    // 1 = fills the frame edge-to-edge (object-fit: cover), higher
+    // values zoom in further.
+    videoScale: 1,
+
+    // VIDEO LINK — direct URL or relative path to the video file
+    // (.mp4 recommended for broad browser support).
+    videoSrc: 'assets/galatians.mp4'
+  };
+
+  function initContactVideo(config) {
+    const frame = document.getElementById('contactVideoFrame');
+    const video = document.getElementById('contactVideoEl');
+    const source = document.getElementById('contactVideoSource');
+    if (!frame || !video || !source) return;
+
+    frame.style.setProperty('--cv-radius', config.radius + 'px');
+    frame.style.setProperty('--cv-scale', config.containerScale);
+    frame.style.setProperty('--cv-pos-x', config.containerPosX + 'px');
+    frame.style.setProperty('--cv-pos-y', config.containerPosY + 'px');
+    frame.style.setProperty('--cv-video-pos-x', config.videoPosX + 'px');
+    frame.style.setProperty('--cv-video-pos-y', config.videoPosY + 'px');
+    frame.style.setProperty('--cv-video-scale', config.videoScale);
+
+    if (config.videoSrc) {
+      source.src = config.videoSrc;
+      video.load();
+    }
+  }
+
+  initContactVideo(CONTACT_VIDEO_CONFIG);
+</script>
+
+</body>
+</html>

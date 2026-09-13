@@ -1395,11 +1395,80 @@
 </head>
 <body>
 
+<script>
+  // ---- Auto-switch between desktop/mobile pages on resize/rotate ----
+  // If the window is resized or the device is rotated past the mobile
+  // breakpoint WHILE the visitor is already on this page, jump them to
+  // the matching page instead of leaving them on a layout that no
+  // longer fits. Mirrors the same check used in index.html's loader.
+  (function(){
+    var MOBILE_BREAKPOINT_PX = 600; // keep this in sync across pages
+    var IS_MOBILE_PAGE = false;
+    var DESKTOP_URL = 'home.html';
+    var MOBILE_URL = 'mobile.html';
+
+    function isMobileScreen(){
+      var w = window.innerWidth, h = window.innerHeight;
+      return w <= MOBILE_BREAKPOINT_PX && h > w;
+    }
+
+    var switching = false;
+    function checkAndSwitch(){
+      if (switching) return;
+      if (isMobileScreen() !== IS_MOBILE_PAGE) {
+        switching = true;
+        window.location.href = isMobileScreen() ? MOBILE_URL : DESKTOP_URL;
+      }
+    }
+
+    // Primary: react right away to resize/rotate/orientation events.
+    var resizeTimer = null;
+    function scheduleCheck(){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(checkAndSwitch, 250);
+    }
+    window.addEventListener('resize', scheduleCheck);
+    window.addEventListener('orientationchange', scheduleCheck);
+    if (window.matchMedia) {
+      var orientationQuery = window.matchMedia('(orientation: portrait)');
+      if (orientationQuery.addEventListener) orientationQuery.addEventListener('change', scheduleCheck);
+      else if (orientationQuery.addListener) orientationQuery.addListener(scheduleCheck); // older Safari
+    }
+
+    // Fail-safe: some browsers and DevTools device-emulation "rotate"
+    // animations don't reliably fire a resize event every time, which
+    // is what let this get stuck before. Polling is cheap and
+    // guarantees the page can never get stranded on the wrong layout.
+    setInterval(checkAndSwitch, 600);
+  })();
+</script>
+
 <div id="pageLoader">
   <span class="loader-dot"></span>
   <span class="loader-dot"></span>
   <span class="loader-dot"></span>
 </div>
+
+<script>
+  // ---- Failsafe page reveal ----
+  // Independent of everything else on the page: if ANY later script
+  // throws an error (e.g. the Lenis smooth-scroll library fails to
+  // load from its CDN), this guarantees the page still becomes
+  // visible after a few seconds instead of staying stuck behind the
+  // loader forever.
+  (function(){
+    function forceReveal(){
+      document.body.classList.add('page-ready');
+      var loader = document.getElementById('pageLoader');
+      if(loader){
+        loader.classList.add('loader-hide');
+        setTimeout(function(){ if(loader.parentNode) loader.remove(); }, 700);
+      }
+    }
+    window.addEventListener('error', forceReveal);
+    setTimeout(forceReveal, 4000);
+  })();
+</script>
 
 <aside class="sidebar">
   <nav class="side-frame">
@@ -1647,19 +1716,28 @@
   const SCROLL_WHEEL_SPEED = 2;
   const SCROLL_TOUCH_SPEED = 5;
 
-  const lenis = new Lenis({
-    duration: SCROLL_DURATION,
-    easing: SCROLL_EASE,
-    wheelMultiplier: SCROLL_WHEEL_SPEED,
-    touchMultiplier: SCROLL_TOUCH_SPEED,
-    smoothWheel: true,
-  });
+  // Guarded: if the Lenis library (loaded from the CDN <script> tag
+  // above) failed to load — offline, blocked, CDN hiccup — don't let
+  // that crash the rest of this script. Fall back to normal native
+  // scrolling instead.
+  let lenis = null;
+  if (typeof Lenis !== 'undefined') {
+    lenis = new Lenis({
+      duration: SCROLL_DURATION,
+      easing: SCROLL_EASE,
+      wheelMultiplier: SCROLL_WHEEL_SPEED,
+      touchMultiplier: SCROLL_TOUCH_SPEED,
+      smoothWheel: true,
+    });
 
-  function lenisRaf(time){
-    lenis.raf(time);
+    function lenisRaf(time){
+      lenis.raf(time);
+      requestAnimationFrame(lenisRaf);
+    }
     requestAnimationFrame(lenisRaf);
+  } else {
+    console.warn('Lenis failed to load — falling back to native scrolling.');
   }
-  requestAnimationFrame(lenisRaf);
 
   // ------------------------------------------------------------------
   // SECTION BRAKES — this is the one place to edit to change how much
@@ -1692,23 +1770,25 @@
     .filter(top => top > 0) // #home starts at 0 — no incoming edge to brake into
     .sort((a, b) => a - b);
 
-  lenis.on('scroll', ({ scroll, direction }) => {
-    // Only brake when moving downward into a section from above it —
-    // scrolling back up stays at full speed.
-    let factor = 1;
-    if (direction > 0) {
-      for (const edgeTop of brakeEdges) {
-        const distanceToEdge = edgeTop - scroll;
-        if (distanceToEdge > 0 && distanceToEdge <= BRAKE_ZONE_PX) {
-          const proximity = 1 - (distanceToEdge / BRAKE_ZONE_PX); // 0 far -> 1 at the edge
-          factor = Math.min(factor, 1 - proximity * (1 - BRAKE_MIN_FACTOR));
-          break;
+  if (lenis) {
+    lenis.on('scroll', ({ scroll, direction }) => {
+      // Only brake when moving downward into a section from above it —
+      // scrolling back up stays at full speed.
+      let factor = 1;
+      if (direction > 0) {
+        for (const edgeTop of brakeEdges) {
+          const distanceToEdge = edgeTop - scroll;
+          if (distanceToEdge > 0 && distanceToEdge <= BRAKE_ZONE_PX) {
+            const proximity = 1 - (distanceToEdge / BRAKE_ZONE_PX); // 0 far -> 1 at the edge
+            factor = Math.min(factor, 1 - proximity * (1 - BRAKE_MIN_FACTOR));
+            break;
+          }
         }
       }
-    }
-    lenis.options.wheelMultiplier = SCROLL_WHEEL_SPEED * factor;
-    lenis.options.touchMultiplier = SCROLL_TOUCH_SPEED * factor;
-  });
+      lenis.options.wheelMultiplier = SCROLL_WHEEL_SPEED * factor;
+      lenis.options.touchMultiplier = SCROLL_TOUCH_SPEED * factor;
+    });
+  }
 
   // Route every in-page "#section" link (sidebar nav, hero buttons, the
   // About CTA, etc.) through Lenis too, so clicking a link glides with
@@ -1719,7 +1799,11 @@
       const target = document.querySelector(link.getAttribute('href'));
       if(target){
         e.preventDefault();
-        lenis.scrollTo(target, { duration: SCROLL_DURATION });
+        if (lenis) {
+          lenis.scrollTo(target, { duration: SCROLL_DURATION });
+        } else {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
       }
     });
   });
