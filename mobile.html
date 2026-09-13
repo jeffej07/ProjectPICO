@@ -466,6 +466,11 @@
     var switching = false;
     function checkAndSwitch(){
       if (switching) return;
+      // Manual override: set by the "Switch to mobile" button on
+      // home.html right before navigating here. While it's set, stay
+      // on mobile.html regardless of width/orientation changes.
+      // TEMPORARY — remove along with the button once no longer needed.
+      if (sessionStorage.getItem('forcedView') === 'mobile') return;
       if (isMobileScreen() !== IS_MOBILE_PAGE) {
         switching = true;
         window.location.href = isMobileScreen() ? MOBILE_URL : DESKTOP_URL;

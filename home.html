@@ -1314,7 +1314,7 @@
   footer .designed-by{font-size:13.5px;color:var(--text-dim);opacity:.85;}
   footer .copy{font-size:13.5px;color:var(--text-dim);}
 
-  @media(max-width:860px){
+  @media(max-width:600px){
     .sidebar{
       width:100%;height:auto;bottom:auto;
       flex-direction:row;align-items:center;
@@ -1415,6 +1415,11 @@
     var switching = false;
     function checkAndSwitch(){
       if (switching) return;
+      // Manual override: the "Switch to mobile" button sets this flag
+      // right before navigating. While it's set, skip auto-switching so
+      // a forced view doesn't get bounced back by rotation/resize.
+      // TEMPORARY — remove along with the button once no longer needed.
+      if (sessionStorage.getItem('forcedView')) return;
       if (isMobileScreen() !== IS_MOBILE_PAGE) {
         switching = true;
         window.location.href = isMobileScreen() ? MOBILE_URL : DESKTOP_URL;
@@ -1495,6 +1500,22 @@
         <a href="#portfolio" class="btn btn-primary">View our work</a>
         <a href="#contact" class="btn btn-ghost">Start a project</a>
         <a href="#contact" class="btn btn-primary">Help us Build</a>
+      </div>
+      <!-- TEMPORARY — force-switch button for testing mobile.html.
+           Remove this whole <div> (and the <style> block below) once
+           routing is confirmed working. -->
+      <style>
+        /* ↓↓↓ CONTROL — "Switch to mobile" button width ↓↓↓
+           Edit this one value to resize the button. Any CSS width
+           works: a fixed px, a %, "fit-content", "auto", etc. */
+        :root{ --switch-mobile-width: 240px; }
+      </style>
+      <div style="margin-top:14px;">
+        <button type="button" class="btn btn-ghost"
+          style="width:var(--switch-mobile-width);justify-content:center;background:transparent;font-family:inherit;appearance:none;-webkit-appearance:none;outline:none;"
+          onclick="sessionStorage.setItem('forcedView','mobile'); window.location.href='mobile.html';">
+          Switch to mobile
+        </button>
       </div>
     </div>
     <div class="hero-visual">

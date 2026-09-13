@@ -171,6 +171,13 @@
       }
 
       function goToSite(){
+        // Manual override: honors the "Switch to mobile" button on
+        // home.html if the visitor ends up back at the loader while
+        // it's still set. TEMPORARY — remove along with the button.
+        if (sessionStorage.getItem('forcedView') === 'mobile') {
+          window.location.href = 'mobile.html';
+          return;
+        }
         // Checked right here (not just once on load) so a rotation
         // during the intro animation is still picked up correctly.
         window.location.href = isMobileScreen() ? 'mobile.html' : 'home.html';
