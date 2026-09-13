@@ -466,11 +466,6 @@
     var switching = false;
     function checkAndSwitch(){
       if (switching) return;
-      // Manual override: set by the "Switch to mobile" button on
-      // home.html right before navigating here. While it's set, stay
-      // on mobile.html regardless of width/orientation changes.
-      // TEMPORARY — remove along with the button once no longer needed.
-      if (sessionStorage.getItem('forcedView') === 'mobile') return;
       if (isMobileScreen() !== IS_MOBILE_PAGE) {
         switching = true;
         window.location.href = isMobileScreen() ? MOBILE_URL : DESKTOP_URL;
@@ -501,7 +496,7 @@
 
 <header>
   <div class="topbar wrap">
-    <a href="#home" class="logo"><img src="assets/PICO.png" alt="PICO"><span>Project PICO</span></a>
+    <a href="#home" class="logo"><img src="C:\Users\JEFF PC\Desktop\ProjectPico\assets\PICO.png" alt="PICO"><span>Project PICO</span></a>
     <button class="menu-btn" id="menuBtn" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
   </div>
 </header>
@@ -516,7 +511,7 @@
 <nav id="navMenu">
   <button class="nav-close" id="navClose" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
   <div class="nav-brand">
-    <img id="navLogoImg" src="assets/PICO.png" alt="PICO">
+    <img id="navLogoImg" src="C:\Users\JEFF PC\Desktop\ProjectPico\assets\PICO.png" alt="PICO">
     <p class="nav-tagline" id="navTaglineText"><span class="nav-tagline-highlight">N</span><span class="nav-tagline-rest">ext-gen tech solutions and digital experiences.</span></p>
   </div>
   <div class="nav-links">
