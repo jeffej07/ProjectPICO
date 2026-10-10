@@ -155,19 +155,21 @@
 
       // ↓↓↓ MASTER CONTROL — MOBILE vs DESKTOP ROUTING ↓↓↓
       // Decides which page this loader sends people to once it's done.
-      // A screen counts as "mobile" only if it's BOTH narrower than
-      // MOBILE_BREAKPOINT_PX AND taller than it is wide (portrait) —
-      // so a phone held sideways, a tablet, or any desktop/landscape
-      // window still gets home.html. Raise MOBILE_BREAKPOINT_PX to
-      // catch slightly wider phones as "mobile"; lower it to be more
-      // strict. 430-430ish phone widths (iPhone, Pixel, etc.) are
-      // comfortably under the default.
+      // A screen counts as "mobile" if its SMALLER dimension is within
+      // MOBILE_BREAKPOINT_PX — this covers a phone in portrait AND a
+      // phone rotated into landscape (e.g. 812x375 has a smaller
+      // dimension of 375, still under the breakpoint), while a real
+      // desktop/landscape window (e.g. 1920x1080) has a smaller
+      // dimension of 1080 and still gets home.html. Raise
+      // MOBILE_BREAKPOINT_PX to catch slightly larger phones/tablets as
+      // "mobile"; lower it to be more strict.
       var MOBILE_BREAKPOINT_PX = 600;
 
       function isMobileScreen(){
         var w = window.innerWidth;
         var h = window.innerHeight;
-        return w <= MOBILE_BREAKPOINT_PX && h > w;
+        var smallerDimension = Math.min(w, h);
+        return smallerDimension <= MOBILE_BREAKPOINT_PX;
       }
 
       function goToSite(){
@@ -180,7 +182,7 @@
         }
         // Checked right here (not just once on load) so a rotation
         // during the intro animation is still picked up correctly.
-        window.location.href = isMobileScreen() ? 'mobile.html' : 'home.html';
+        window.location.href = isMobileScreen() ? 'mobile.html' : 'mobile.html';
       }
 
       setTimeout(function(){
